@@ -16,7 +16,6 @@ export default function App() {
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen name="Api Testing" component={Api} />
-          <Stack.Screen name="Playback Screen" component={Playback} />
         </Stack.Navigator>
       </NavigationContainer>
     </View>

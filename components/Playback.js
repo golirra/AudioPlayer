@@ -1,9 +1,16 @@
 import React, { Component } from "react";
 import { Audio } from "expo-av";
-import { Text, Switch, View, StyleSheet, Button } from "react-native";
+import {
+  SafeAreaView,
+  Text,
+  Switch,
+  View,
+  StyleSheet,
+  Button,
+} from "react-native";
 import { useState, useEffect } from "react";
 
-function Playback(props) {
+const Playback = ({ data }) => {
   const [sound, setSound] = useState();
   const [playing, setPlaying] = useState(false);
   const [buttonText, setButtonText] = useState("play");
@@ -41,11 +48,16 @@ function Playback(props) {
   }, [sound]);
 
   return (
-    <View>
-      <Button title="Track Select Placeholder/LoadSound" onPress={loadSound} />
-      <Button title="Play/Pause audio" onPress={playPauseSound} />
-    </View>
+    <SafeAreaView>
+      <View>
+        <Button
+          title="Track Select Placeholder/LoadSound"
+          onPress={loadSound}
+        />
+        <Button title="Play/Pause audio" onPress={playPauseSound} />
+      </View>
+    </SafeAreaView>
   );
-}
+};
 
 export default Playback;

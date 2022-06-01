@@ -1,3 +1,4 @@
+import { StyleSheet } from "react-native";
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -10,6 +11,10 @@ const styles = StyleSheet.create({
     width: 10,
     height: 50,
     color: "black",
+  },
+  pretty: {
+    justifyContent: "center",
+    fontSize: 50,
   },
 });
 
