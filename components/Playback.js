@@ -9,6 +9,7 @@ import {
   Button,
 } from "react-native";
 import { useState, useEffect } from "react";
+import * as MediaLibrary from "expo-media-library";
 
 const Playback = ({ data }) => {
   const [sound, setSound] = useState();
@@ -37,6 +38,26 @@ const Playback = ({ data }) => {
       setPlaying(false);
     }
   }
+  const getPermission = async () => {
+    const permission = await MediaLibrary.getPermissionsAsync();
+    if (permission.granted) {
+      getAudioFiles();
+    }
+    if (!permission.granted && permission.canAskAgain) {
+      await MediaLibrary.requestPermissionsAsync();
+    }
+    console.log(permission);
+  };
+  useEffect(() => {
+    getPermission();
+  }, []);
+
+  const getAudioFiles = async () => {
+    const media = await MediaLibrary.getAssetsAsync({
+      mediaType: "audio",
+    });
+    console.log(media);
+  };
 
   useEffect(() => {
     return sound
@@ -55,6 +76,11 @@ const Playback = ({ data }) => {
           onPress={loadSound}
         />
         <Button title="Play/Pause audio" onPress={playPauseSound} />
+        <Button
+          title="media library assets console log"
+          onPress={getAudioFiles}
+        />
+        <Button title="media library permissions" onPress={getPermission} />
       </View>
     </SafeAreaView>
   );
