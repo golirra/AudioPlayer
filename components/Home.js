@@ -1,10 +1,9 @@
 import { Text, View, Button } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
-function Home() {
+function Home({ navigation }) {
   return (
-    <View>
-      <Button title="fuck" />
-    </View>
+    <Button title="Api screen" onPress={() => navigation.navigate("Api")} />
   );
 }
 

@@ -53,10 +53,15 @@ const Playback = ({ data }) => {
   }, []);
 
   const getAudioFiles = async () => {
-    const media = await MediaLibrary.getAssetsAsync({
-      mediaType: "audio",
-    });
-    console.log(media);
+    try {
+      const media = await MediaLibrary.getAssetsAsync({
+        mediaType: "audio",
+      });
+
+      console.log(media);
+    } catch (err) {
+      console.log("Must be on mobile");
+    }
   };
 
   useEffect(() => {

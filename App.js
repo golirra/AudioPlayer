@@ -2,20 +2,37 @@ import * as React from "react";
 import { useState, useEffect } from "react";
 import { Text, Switch, View, StyleSheet, Button } from "react-native";
 import { Audio } from "expo-av";
-import Playback from "./components/Playback.js";
-import Api from "./components/Api.js";
 import { createStackNavigator } from "@react-navigation/stack";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
+import Api from "./components/Api.js";
 import Home from "./components/Home.js";
+import Playback from "./components/Playback.js";
+import Navigator from "./screens/Navigator.js";
 
 export default function App() {
   const Stack = createStackNavigator();
+  //const navigation = useNavigation();
 
+  const goToPrevScreen = () => {
+    navigation.goBack();
+  };
   return (
     <View style={styles.container}>
       <NavigationContainer>
         <Stack.Navigator>
-          <Stack.Screen name="Api Testing" component={Playback} />
+          <Stack.Screen name="Home screen" component={Home} />
+          <Stack.Screen
+            name="Api"
+            component={Playback}
+            options={{
+              headerTitle: (props) => (
+                <Button
+                  title="Placeholder Button goback"
+                  onPress={navigation.goBack}
+                />
+              ),
+            }}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </View>
