@@ -1,15 +1,18 @@
 import React, { Component } from "react";
-import { Audio } from "expo-av";
+import { Audio, Video } from "expo-av";
 import {
   SafeAreaView,
   Text,
   Switch,
   View,
+  TouchableOpacity,
   StyleSheet,
   Button,
+  Image,
 } from "react-native";
 import { useState, useEffect } from "react";
 import * as MediaLibrary from "expo-media-library";
+import styles from "../styles/styles.js";
 
 const Playback = ({ data }) => {
   const [sound, setSound] = useState();
@@ -21,8 +24,17 @@ const Playback = ({ data }) => {
     const { sound } = await Audio.Sound.createAsync(
       require("../assets/me.mp3")
     );
+
     setSound(sound);
   }
+  useEffect(() => {
+    return sound
+      ? () => {
+          console.log("Unloading Sound");
+          sound.unloadAsync();
+        }
+      : undefined;
+  }, [sound]);
 
   const handleClick = () =>
     playing ? setButtonText("play") : setButtonText("pause");
@@ -37,6 +49,9 @@ const Playback = ({ data }) => {
       console.log("pausing sound");
       setPlaying(false);
     }
+  }
+  async function songStatus() {
+    console.log(sound.getStatusAsync());
   }
   const getPermission = async () => {
     const permission = await MediaLibrary.getPermissionsAsync();
@@ -60,32 +75,46 @@ const Playback = ({ data }) => {
 
       console.log(media);
     } catch (err) {
-      console.log("Must be on mobile");
+      console.log("Error: Must be on mobile");
     }
   };
 
-  useEffect(() => {
-    return sound
-      ? () => {
-          console.log("Unloading Sound");
-          sound.unloadAsync();
-        }
-      : undefined;
-  }, [sound]);
-
   return (
     <SafeAreaView>
-      <View>
+      <View style={styles.container}>
         <Button
           title="Track Select Placeholder/LoadSound"
           onPress={loadSound}
         />
-        <Button title="Play/Pause audio" onPress={playPauseSound} />
+        <View style={styles.container}>
+          <Image
+            style={styles.albumCover}
+            source={require("../assets/cover.jpg")}
+          />
+        </View>
+        <TouchableOpacity
+          style={styles.buttonContainer}
+          onPress={playPauseSound}
+        >
+          <Text style={styles.text}>Play/Pause</Text>
+        </TouchableOpacity>
         <Button
           title="media library assets console log"
           onPress={getAudioFiles}
         />
         <Button title="media library permissions" onPress={getPermission} />
+        <Button
+          title="test"
+          onPress={() => {
+            console.log(MyContext);
+          }}
+        />
+        <Button
+          title="song status"
+          onPress={() => {
+            songStatus();
+          }}
+        />
       </View>
     </SafeAreaView>
   );

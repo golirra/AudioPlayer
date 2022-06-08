@@ -3,7 +3,10 @@ import { useNavigation } from "@react-navigation/native";
 
 function Home({ navigation }) {
   return (
-    <Button title="Api screen" onPress={() => navigation.navigate("Api")} />
+    <Button
+      title="Playback Screen"
+      onPress={() => navigation.navigate("Api")}
+    />
   );
 }
 
