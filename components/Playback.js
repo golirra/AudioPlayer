@@ -18,13 +18,13 @@ const Playback = ({ data }) => {
   const [sound, setSound] = useState();
   const [playing, setPlaying] = useState(false);
   const [buttonText, setButtonText] = useState("play");
+  let [songPosition, setSongPosition] = useState(0);
 
   async function loadSound() {
     console.log("Loading Sound");
     const { sound } = await Audio.Sound.createAsync(
       require("../assets/me.mp3")
     );
-
     setSound(sound);
   }
   useEffect(() => {
@@ -36,31 +36,48 @@ const Playback = ({ data }) => {
       : undefined;
   }, [sound]);
 
+  useEffect(() => {
+    if (sound) {
+      if (playing) {
+        songPosition = setInterval(async () => {
+          let status = await songStatus();
+          //console.log(status.positionMillis);
+          setSongPosition(status.positionMillis);
+        }, 1000);
+
+        console.log("something is playing");
+      } else {
+        console.log("pausing");
+      }
+    }
+    return () => {
+      clearInterval(songPosition);
+    };
+  }, [playing]);
+
   const handleClick = () =>
     playing ? setButtonText("play") : setButtonText("pause");
 
-    const songStatus = async () => {
-      const status = await sound.getStatusAsync();
-      console.log(status.positionMillis);
-    };
+  /* const songStatus = async () => {
+    const status = await sound.getStatusAsync();
+    console.log(status.positionMillis);
+  }; */
+
+  const songStatus = async () => {
+    return await sound.getStatusAsync();
+  };
 
   async function playPauseSound() {
-    if(sound){
-      console.log('sound loaded')
-      await sound.playAsync();
-      setPlaying(true);
-      const interval = setInterval(() => {
-        songStatus();
-      }, 1000);
-      if (playing) {
-        await sound.pauseAsync();
+    if (sound) {
+      if (playing === false) {
+        setPlaying(true);
+        await sound.playAsync();
+      } else {
         setPlaying(false);
-        console.log("sound paused")
-      }
-    } else {
-      console.log('sound not loaded')
+        await sound.pauseAsync();
       }
     }
+  }
 
   const getPermission = async () => {
     const permission = await MediaLibrary.getPermissionsAsync();
@@ -101,29 +118,23 @@ const Playback = ({ data }) => {
             source={require("../assets/cover.jpg")}
           />
         </View>
+        <View style={{ right: 150 }}>
+          <Text style={{ fontSize: 40, fontWeight: "bold" }}>
+            {songPosition}
+          </Text>
+        </View>
         <TouchableOpacity
           style={styles.buttonContainer}
           onPress={playPauseSound}
         >
           <Text style={styles.text}>Play/Pause</Text>
         </TouchableOpacity>
+
         <Button
           title="media library assets console log"
           onPress={getAudioFiles}
         />
         <Button title="media library permissions" onPress={getPermission} />
-        <Button
-          title="test"
-          onPress={() => {
-            console.log(MyContext);
-          }}
-        />
-        <Button
-          title="song status"
-          onPress={() => {
-            songStatus();
-          }}
-        />
       </View>
     </SafeAreaView>
   );
