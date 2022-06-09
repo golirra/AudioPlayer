@@ -15,6 +15,7 @@ import * as MediaLibrary from "expo-media-library";
 import styles from "../styles/styles.js";
 
 const Playback = ({ data }) => {
+  var interval = 0;
   const [sound, setSound] = useState();
   const [playing, setPlaying] = useState(false);
   const [buttonText, setButtonText] = useState("play");
@@ -24,7 +25,6 @@ const Playback = ({ data }) => {
     const { sound } = await Audio.Sound.createAsync(
       require("../assets/me.mp3")
     );
-
     setSound(sound);
   }
   useEffect(() => {
@@ -36,31 +36,47 @@ const Playback = ({ data }) => {
       : undefined;
   }, [sound]);
 
+  useEffect(() => {
+    if (sound) {
+      if (playing) {
+        interval = setInterval(async () => {
+          let status = await songStatus();
+          console.log(status.positionMillis);
+        }, 1000);
+
+        console.log("something is playing");
+      } else {
+        console.log("pausing");
+      }
+    }
+    return () => {
+      clearInterval(interval);
+    };
+  }, [playing]);
+
   const handleClick = () =>
     playing ? setButtonText("play") : setButtonText("pause");
 
-    const songStatus = async () => {
-      const status = await sound.getStatusAsync();
-      console.log(status.positionMillis);
-    };
+  /* const songStatus = async () => {
+    const status = await sound.getStatusAsync();
+    console.log(status.positionMillis);
+  }; */
+
+  const songStatus = async () => {
+    return await sound.getStatusAsync();
+  };
 
   async function playPauseSound() {
-    if(sound){
-      console.log('sound loaded')
-      await sound.playAsync();
-      setPlaying(true);
-      const interval = setInterval(() => {
-        songStatus();
-      }, 1000);
-      if (playing) {
-        await sound.pauseAsync();
+    if (sound) {
+      if (playing === false) {
+        setPlaying(true);
+        await sound.playAsync();
+      } else {
         setPlaying(false);
-        console.log("sound paused")
-      }
-    } else {
-      console.log('sound not loaded')
+        await sound.pauseAsync();
       }
     }
+  }
 
   const getPermission = async () => {
     const permission = await MediaLibrary.getPermissionsAsync();
@@ -107,6 +123,7 @@ const Playback = ({ data }) => {
         >
           <Text style={styles.text}>Play/Pause</Text>
         </TouchableOpacity>
+
         <Button
           title="media library assets console log"
           onPress={getAudioFiles}
