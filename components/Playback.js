@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Audio, Video } from "expo-av";
+import { Audio, AVPlaybackStatus } from "expo-av";
 import {
   SafeAreaView,
   Text,
@@ -36,6 +36,17 @@ const Playback = ({ data }) => {
       : undefined;
   }, [sound]);
 
+  useEffect(() => {
+    const songStatus = async () => {
+      const status = await sound.getStatusAsync();
+      console.log(status.positionMillis);
+    };
+    const interval = setInterval(() => {
+      console.log("fuck");
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   const handleClick = () =>
     playing ? setButtonText("play") : setButtonText("pause");
 
@@ -50,9 +61,7 @@ const Playback = ({ data }) => {
       setPlaying(false);
     }
   }
-  async function songStatus() {
-    console.log(sound.getStatusAsync());
-  }
+
   const getPermission = async () => {
     const permission = await MediaLibrary.getPermissionsAsync();
     if (permission.granted) {

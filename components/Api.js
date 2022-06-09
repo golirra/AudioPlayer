@@ -20,7 +20,7 @@ const Api = () => {
   useEffect(() => {
     const getArtists = () => {
       axios
-        .get("https://api.discogs.com/artists/3317315", {
+        .get("https://api.discogs.com/artists/3317315/releases", {
           headers: {
             "Content-Type": "application/json",
             //"User-Agent": "ReactNativeAudio/0.1 +Axios 0.27.2",
