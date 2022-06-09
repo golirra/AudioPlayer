@@ -15,10 +15,10 @@ import * as MediaLibrary from "expo-media-library";
 import styles from "../styles/styles.js";
 
 const Playback = ({ data }) => {
-  var interval = 0;
   const [sound, setSound] = useState();
   const [playing, setPlaying] = useState(false);
   const [buttonText, setButtonText] = useState("play");
+  let [interval, setIntervalID] = useState(0);
 
   async function loadSound() {
     console.log("Loading Sound");
@@ -41,7 +41,8 @@ const Playback = ({ data }) => {
       if (playing) {
         interval = setInterval(async () => {
           let status = await songStatus();
-          console.log(status.positionMillis);
+          //console.log(status.positionMillis);
+          setIntervalID(status.positionMillis);
         }, 1000);
 
         console.log("something is playing");
@@ -117,6 +118,9 @@ const Playback = ({ data }) => {
             source={require("../assets/cover.jpg")}
           />
         </View>
+        <View style={{ right: 150 }}>
+          <Text style={{ fontSize: 40, fontWeight: "bold" }}>{interval}</Text>
+        </View>
         <TouchableOpacity
           style={styles.buttonContainer}
           onPress={playPauseSound}
@@ -129,18 +133,6 @@ const Playback = ({ data }) => {
           onPress={getAudioFiles}
         />
         <Button title="media library permissions" onPress={getPermission} />
-        <Button
-          title="test"
-          onPress={() => {
-            console.log(MyContext);
-          }}
-        />
-        <Button
-          title="song status"
-          onPress={() => {
-            songStatus();
-          }}
-        />
       </View>
     </SafeAreaView>
   );
