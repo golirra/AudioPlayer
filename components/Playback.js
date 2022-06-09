@@ -36,31 +36,31 @@ const Playback = ({ data }) => {
       : undefined;
   }, [sound]);
 
-  useEffect(() => {
+  const handleClick = () =>
+    playing ? setButtonText("play") : setButtonText("pause");
+
     const songStatus = async () => {
       const status = await sound.getStatusAsync();
       console.log(status.positionMillis);
     };
-    const interval = setInterval(() => {
-      console.log("fuck");
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const handleClick = () =>
-    playing ? setButtonText("play") : setButtonText("pause");
 
   async function playPauseSound() {
-    if (playing === false) {
+    if(sound){
+      console.log('sound loaded')
       await sound.playAsync();
-      console.log("playing sound");
       setPlaying(true);
+      const interval = setInterval(() => {
+        songStatus();
+      }, 1000);
+      if (playing) {
+        await sound.pauseAsync();
+        setPlaying(false);
+        console.log("sound paused")
+      }
     } else {
-      await sound.pauseAsync();
-      console.log("pausing sound");
-      setPlaying(false);
+      console.log('sound not loaded')
+      }
     }
-  }
 
   const getPermission = async () => {
     const permission = await MediaLibrary.getPermissionsAsync();
