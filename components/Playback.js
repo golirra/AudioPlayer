@@ -18,7 +18,7 @@ const Playback = ({ data }) => {
   const [sound, setSound] = useState();
   const [playing, setPlaying] = useState(false);
   const [buttonText, setButtonText] = useState("play");
-  let [interval, setIntervalID] = useState(0);
+  let [songPosition, setSongPosition] = useState(0);
 
   async function loadSound() {
     console.log("Loading Sound");
@@ -39,10 +39,10 @@ const Playback = ({ data }) => {
   useEffect(() => {
     if (sound) {
       if (playing) {
-        interval = setInterval(async () => {
+        songPosition = setInterval(async () => {
           let status = await songStatus();
           //console.log(status.positionMillis);
-          setIntervalID(status.positionMillis);
+          setSongPosition(status.positionMillis);
         }, 1000);
 
         console.log("something is playing");
@@ -51,7 +51,7 @@ const Playback = ({ data }) => {
       }
     }
     return () => {
-      clearInterval(interval);
+      clearInterval(songPosition);
     };
   }, [playing]);
 
@@ -119,7 +119,9 @@ const Playback = ({ data }) => {
           />
         </View>
         <View style={{ right: 150 }}>
-          <Text style={{ fontSize: 40, fontWeight: "bold" }}>{interval}</Text>
+          <Text style={{ fontSize: 40, fontWeight: "bold" }}>
+            {songPosition}
+          </Text>
         </View>
         <TouchableOpacity
           style={styles.buttonContainer}
