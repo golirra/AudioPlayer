@@ -15,13 +15,8 @@ const styles = StyleSheet.create({
     color: "black",
   },
   buttonContainer: {
-    width: 500,
-    color: "red",
-    elevation: 8,
-    backgroundColor: "#000000",
-    borderRadius: 2,
-    paddingVertical: 5,
-    paddingHorizontal: 0,
+    width: 50,
+    height: 50,
   },
   albumCover: {
     flex: 1,
@@ -33,6 +28,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     color: "white",
     fontSize: 30,
+  },
+  logo: {
+    width: 66,
+    height: 58,
   },
 });
 
