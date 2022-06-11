@@ -2,25 +2,21 @@ import React, { Component } from "react";
 import { Audio, AVPlaybackStatus } from "expo-av";
 import Slider from "@react-native-community/slider";
 import {
-  AppRegistry,
   SafeAreaView,
   Text,
-  Switch,
   View,
   TouchableOpacity,
-  StyleSheet,
   Button,
   Image,
 } from "react-native";
-import { useState, useEffect, useRef, useLayoutEffect } from "react";
-import * as MediaLibrary from "expo-media-library";
+import { useState, useEffect } from "react";
+
 import styles from "../styles/styles.js";
 
 const Playback = () => {
   const [sound, setSound] = useState();
   const [playing, setPlaying] = useState(false);
-  const [buttonText, setButtonText] = useState("play");
-  let [songPosition, setSongPosition] = useState(0);
+  let [songPosition, setSongPosition] = useState(0); //not supposed to use let with usestate
   let [songDuration, setSongDuration] = useState(0);
 
   async function loadSound() {
@@ -29,7 +25,6 @@ const Playback = () => {
       require("../assets/me.mp3")
     );
     setSound(sound);
-
     const status = await sound.getStatusAsync();
     console.log(status);
   }
@@ -42,8 +37,6 @@ const Playback = () => {
         }
       : undefined;
   }, [sound]);
-
-  const isInitialMount = useRef(true);
 
   //it works but the logic is off
   useEffect(() => {
@@ -65,7 +58,7 @@ const Playback = () => {
       : minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
   }
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (sound) {
       if (playing) {
         songPosition = setInterval(async () => {
@@ -84,12 +77,9 @@ const Playback = () => {
     };
   }, [playing]);
 
-  const handleClick = () =>
-    playing ? setButtonText("play") : setButtonText("pause");
-
   const playPauseSound = async () => {
     if (sound) {
-      if (playing === false) {
+      if (!playing) {
         setPlaying(true);
         await sound.playAsync();
       } else {
