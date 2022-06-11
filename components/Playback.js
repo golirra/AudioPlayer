@@ -12,6 +12,7 @@ import {
 import { useState, useEffect } from "react";
 
 import styles from "../styles/styles.js";
+import { API_KEY, API_SECRET } from "@env";
 
 const Playback = () => {
   const [sound, setSound] = useState();
@@ -22,7 +23,10 @@ const Playback = () => {
   async function loadSound() {
     console.log("Loading Sound");
     const { sound } = await Audio.Sound.createAsync(
-      require("../assets/me.mp3")
+      require("../assets/me.mp3"),
+      {
+        shouldPlay: true,
+      }
     );
     setSound(sound);
     const status = await sound.getStatusAsync();
@@ -51,8 +55,8 @@ const Playback = () => {
 
   /*from stackoverflow */
   function millisToMinutesAndSeconds(millis) {
-    var minutes = Math.floor(millis / 60000);
-    var seconds = ((millis % 60000) / 1000).toFixed(0);
+    let minutes = Math.floor(millis / 60000);
+    let seconds = ((millis % 60000) / 1000).toFixed(0);
     return seconds == 60
       ? minutes + 1 + ":00"
       : minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
@@ -133,9 +137,8 @@ const Playback = () => {
             source={require("../assets/play-pause-icon.png")}
           />
         </TouchableOpacity>
-
         <Slider
-          style={{ width: 200, height: 40 }}
+          style={styles.slider}
           minimumValue={0}
           maximumValue={1}
           onValueChange={() => {

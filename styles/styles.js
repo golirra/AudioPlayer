@@ -1,8 +1,6 @@
 import { StyleSheet } from "react-native";
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-
     alignItems: "center",
     backgroundColor: "#ecf7d9",
     padding: 10,
@@ -33,6 +31,7 @@ const styles = StyleSheet.create({
     width: 66,
     height: 58,
   },
+  slider: { width: 350, height: 10 },
 });
 
 export default styles;
