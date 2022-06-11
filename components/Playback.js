@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { Audio, AVPlaybackStatus } from "expo-av";
+import Slider from "@react-native-community/slider";
 import {
+  AppRegistry,
   SafeAreaView,
   Text,
   Switch,
@@ -146,7 +148,6 @@ const Playback = ({ data }) => {
           <Text
             style={{
               fontSize: 40,
-              fontWeght: "bold",
               left: 500,
               position: "absolute",
             }}
@@ -171,6 +172,14 @@ const Playback = ({ data }) => {
         />
 
         <Button title="media library permissions" onPress={getPermission} />
+        <Slider
+          style={{ width: 200, height: 40 }}
+          minimumValue={0}
+          maximumValue={1}
+          onValueChange={() => {
+            console.log(songDuration);
+          }}
+        />
       </View>
     </SafeAreaView>
   );
