@@ -12,11 +12,11 @@ import {
   Button,
   Image,
 } from "react-native";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useLayoutEffect } from "react";
 import * as MediaLibrary from "expo-media-library";
 import styles from "../styles/styles.js";
 
-const Playback = ({ data }) => {
+const Playback = () => {
   const [sound, setSound] = useState();
   const [playing, setPlaying] = useState(false);
   const [buttonText, setButtonText] = useState("play");
@@ -29,7 +29,11 @@ const Playback = ({ data }) => {
       require("../assets/me.mp3")
     );
     setSound(sound);
+
+    const status = await sound.getStatusAsync();
+    console.log(status);
   }
+
   useEffect(() => {
     return sound
       ? () => {
@@ -61,7 +65,7 @@ const Playback = ({ data }) => {
       : minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
   }
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (sound) {
       if (playing) {
         songPosition = setInterval(async () => {
@@ -92,32 +96,6 @@ const Playback = ({ data }) => {
         setPlaying(false);
         await sound.pauseAsync();
       }
-    }
-  };
-
-  const getPermission = async () => {
-    const permission = await MediaLibrary.getPermissionsAsync();
-    if (permission.granted) {
-      getAudioFiles();
-    }
-    if (!permission.granted && permission.canAskAgain) {
-      await MediaLibrary.requestPermissionsAsync();
-    }
-    console.log(permission);
-  };
-  useEffect(() => {
-    getPermission();
-  }, []);
-
-  const getAudioFiles = async () => {
-    try {
-      const media = await MediaLibrary.getAssetsAsync({
-        mediaType: "audio",
-      });
-
-      console.log(media);
-    } catch (err) {
-      console.log("Error: Must be on mobile");
     }
   };
 
@@ -166,12 +144,6 @@ const Playback = ({ data }) => {
           />
         </TouchableOpacity>
 
-        <Button
-          title="media library assets console log"
-          onPress={getAudioFiles}
-        />
-
-        <Button title="media library permissions" onPress={getPermission} />
         <Slider
           style={{ width: 200, height: 40 }}
           minimumValue={0}
