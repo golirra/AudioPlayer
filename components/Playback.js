@@ -1,5 +1,6 @@
-import React, { Component } from "react";
 import { Audio, AVPlaybackStatus } from "expo-av";
+import * as MediaLibrary from "expo-media-library";
+
 import {
   SafeAreaView,
   Text,
@@ -11,8 +12,8 @@ import {
   Image,
 } from "react-native";
 import { useState, useEffect } from "react";
-import * as MediaLibrary from "expo-media-library";
 import styles from "../styles/styles.js";
+import  MediaButtons  from '../styles/MediaButtons'
 
 const Playback = ({ data }) => {
   const [sound, setSound] = useState();
@@ -27,6 +28,7 @@ const Playback = ({ data }) => {
     );
     setSound(sound);
   }
+
   useEffect(() => {
     return sound
       ? () => {
@@ -118,17 +120,50 @@ const Playback = ({ data }) => {
             source={require("../assets/cover.jpg")}
           />
         </View>
-        <View style={{ right: 150 }}>
+
+        <View style={{ justifyContent: "center" }}>
           <Text style={{ fontSize: 40, fontWeight: "bold" }}>
             {songPosition}
           </Text>
         </View>
-        <TouchableOpacity
-          style={styles.buttonContainer}
-          onPress={playPauseSound}
-        >
-          <Text style={styles.text}>Play/Pause</Text>
-        </TouchableOpacity>
+        
+        <View style={{ flexDirection: "row" }}>
+          <TouchableOpacity
+              style={styles.buttonContainer}
+            > 
+              <Image
+                source={MediaButtons.previous}
+                style={styles.button}
+              /> 
+          </TouchableOpacity>
+          
+          <TouchableOpacity
+            style={styles.buttonContainer}
+            onPress={playPauseSound}
+          > 
+            {playing ? 
+              <Image
+                source={MediaButtons.pause}
+                style={styles.button}
+              /> 
+            : 
+              <Image
+                source={MediaButtons.play}
+                style={styles.button}
+              /> 
+            }
+          </TouchableOpacity>
+
+          <TouchableOpacity
+              style={styles.buttonContainer}
+            > 
+              <Image
+                source={MediaButtons.next}
+                style={styles.button}
+              /> 
+          </TouchableOpacity>
+
+        </View>
 
         <Button
           title="media library assets console log"
