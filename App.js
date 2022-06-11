@@ -20,7 +20,7 @@ export default function App() {
     <View style={styles.container}>
       <NavigationContainer>
         <Stack.Navigator>
-          <Stack.Screen name="Home screen" component={Home} />
+          <Stack.Screen name="Home screen" component={Playback} />
           <Stack.Screen
             name="Api"
             component={Playback}
