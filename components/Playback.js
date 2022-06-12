@@ -1,5 +1,4 @@
-import { Audio, AVPlaybackStatus } from "expo-av";
-import * as MediaLibrary from "expo-media-library";
+import { Audio } from "expo-av";
 
 import {
   SafeAreaView,
@@ -9,11 +8,11 @@ import {
   Button,
   Image,
 } from "react-native";
+
 import { useState, useEffect } from "react";
 import styles from "../styles/styles.js";
 import  MediaButtons  from '../styles/MediaButtons'
 
-import styles from "../styles/styles.js";
 import { API_KEY, API_SECRET } from "@env";
 
 const Playback = () => {
@@ -159,13 +158,8 @@ const Playback = () => {
                 style={styles.button}
               /> 
           </TouchableOpacity>
-
         </View>
 
-        <Button
-          title="media library assets console log"
-          onPress={getAudioFiles}
-        />
       </View>
     </SafeAreaView>
   );
