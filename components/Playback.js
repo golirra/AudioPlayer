@@ -4,10 +4,8 @@ import * as MediaLibrary from "expo-media-library";
 import {
   SafeAreaView,
   Text,
-  Switch,
   View,
   TouchableOpacity,
-  StyleSheet,
   Button,
   Image,
 } from "react-native";
@@ -15,18 +13,26 @@ import { useState, useEffect } from "react";
 import styles from "../styles/styles.js";
 import  MediaButtons  from '../styles/MediaButtons'
 
-const Playback = ({ data }) => {
+import styles from "../styles/styles.js";
+import { API_KEY, API_SECRET } from "@env";
+
+const Playback = () => {
   const [sound, setSound] = useState();
   const [playing, setPlaying] = useState(false);
-  const [buttonText, setButtonText] = useState("play");
-  let [songPosition, setSongPosition] = useState(0);
+  let [songPosition, setSongPosition] = useState(0); //not supposed to use let with usestate
+  let [songDuration, setSongDuration] = useState(0);
 
   async function loadSound() {
     console.log("Loading Sound");
     const { sound } = await Audio.Sound.createAsync(
-      require("../assets/me.mp3")
+      require("../assets/me.mp3"),
+      {
+        shouldPlay: true,
+      }
     );
     setSound(sound);
+    const status = await sound.getStatusAsync();
+    console.log(status);
   }
 
   useEffect(() => {
@@ -38,13 +44,33 @@ const Playback = ({ data }) => {
       : undefined;
   }, [sound]);
 
+  //it works but the logic is off
+  useEffect(() => {
+    if (sound) {
+      const getSongDuration = async () => {
+        let status = await sound.getStatusAsync();
+        setSongDuration(millisToMinutesAndSeconds(status.durationMillis));
+      };
+      getSongDuration();
+    }
+  });
+
+  /*from stackoverflow */
+  function millisToMinutesAndSeconds(millis) {
+    let minutes = Math.floor(millis / 60000);
+    let seconds = ((millis % 60000) / 1000).toFixed(0);
+    return seconds == 60
+      ? minutes + 1 + ":00"
+      : minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+  }
+
   useEffect(() => {
     if (sound) {
       if (playing) {
         songPosition = setInterval(async () => {
-          let status = await songStatus();
+          let status = await sound.getStatusAsync();
           //console.log(status.positionMillis);
-          setSongPosition(status.positionMillis);
+          setSongPosition(millisToMinutesAndSeconds(status.positionMillis)); //math here probably wrong
         }, 1000);
 
         console.log("something is playing");
@@ -57,53 +83,15 @@ const Playback = ({ data }) => {
     };
   }, [playing]);
 
-  const handleClick = () =>
-    playing ? setButtonText("play") : setButtonText("pause");
-
-  /* const songStatus = async () => {
-    const status = await sound.getStatusAsync();
-    console.log(status.positionMillis);
-  }; */
-
-  const songStatus = async () => {
-    return await sound.getStatusAsync();
-  };
-
-  async function playPauseSound() {
+  const playPauseSound = async () => {
     if (sound) {
-      if (playing === false) {
+      if (!playing) {
         setPlaying(true);
         await sound.playAsync();
       } else {
         setPlaying(false);
         await sound.pauseAsync();
       }
-    }
-  }
-
-  const getPermission = async () => {
-    const permission = await MediaLibrary.getPermissionsAsync();
-    if (permission.granted) {
-      getAudioFiles();
-    }
-    if (!permission.granted && permission.canAskAgain) {
-      await MediaLibrary.requestPermissionsAsync();
-    }
-    console.log(permission);
-  };
-  useEffect(() => {
-    getPermission();
-  }, []);
-
-  const getAudioFiles = async () => {
-    try {
-      const media = await MediaLibrary.getAssetsAsync({
-        mediaType: "audio",
-      });
-
-      console.log(media);
-    } catch (err) {
-      console.log("Error: Must be on mobile");
     }
   };
 
@@ -124,6 +112,15 @@ const Playback = ({ data }) => {
         <View style={{ justifyContent: "center" }}>
           <Text style={{ fontSize: 40, fontWeight: "bold" }}>
             {songPosition}
+          </Text>
+          <Text
+            style={{
+              fontSize: 40,
+              left: 500,
+              position: "absolute",
+            }}
+          >
+            {songDuration}
           </Text>
         </View>
         
@@ -169,7 +166,6 @@ const Playback = ({ data }) => {
           title="media library assets console log"
           onPress={getAudioFiles}
         />
-        <Button title="media library permissions" onPress={getPermission} />
       </View>
     </SafeAreaView>
   );

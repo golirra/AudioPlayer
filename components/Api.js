@@ -12,6 +12,7 @@ import {
 import { useState, useEffect } from "react";
 import axios from "axios";
 import styles from "../styles/styles";
+import { API_KEY, API_SECRET } from "@env";
 
 const Api = () => {
   const cors = require("cors");
@@ -26,7 +27,7 @@ const Api = () => {
             //"User-Agent": "ReactNativeAudio/0.1 +Axios 0.27.2",
 
             Authorization:
-              "Discogs key=JnWakoykeORxNFmHFywg,secret=hwPmGFhcFVEYCUeYUAEBOexadRSvsUdk",
+              "Discogs key=" + { API_KEY } + ",secret=" + { API_SECRET },
           },
         })
         .then((response) => {
