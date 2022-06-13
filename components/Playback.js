@@ -11,9 +11,7 @@ import {
 
 import { useState, useEffect } from "react";
 import styles from "../styles/styles.js";
-import  MediaButtons  from '../styles/MediaButtons'
-
-import { API_KEY, API_SECRET } from "@env";
+import MediaButtons from "../styles/MediaButtons";
 
 const Playback = () => {
   const [sound, setSound] = useState();
@@ -122,44 +120,27 @@ const Playback = () => {
             {songDuration}
           </Text>
         </View>
-        
+
         <View style={{ flexDirection: "row" }}>
-          <TouchableOpacity
-              style={styles.buttonContainer}
-            > 
-              <Image
-                source={MediaButtons.previous}
-                style={styles.button}
-              /> 
+          <TouchableOpacity style={styles.buttonContainer}>
+            <Image source={MediaButtons.previous} style={styles.button} />
           </TouchableOpacity>
-          
+
           <TouchableOpacity
             style={styles.buttonContainer}
             onPress={playPauseSound}
-          > 
-            {playing ? 
-              <Image
-                source={MediaButtons.pause}
-                style={styles.button}
-              /> 
-            : 
-              <Image
-                source={MediaButtons.play}
-                style={styles.button}
-              /> 
-            }
+          >
+            {playing ? (
+              <Image source={MediaButtons.pause} style={styles.button} />
+            ) : (
+              <Image source={MediaButtons.play} style={styles.button} />
+            )}
           </TouchableOpacity>
 
-          <TouchableOpacity
-              style={styles.buttonContainer}
-            > 
-              <Image
-                source={MediaButtons.next}
-                style={styles.button}
-              /> 
+          <TouchableOpacity style={styles.buttonContainer}>
+            <Image source={MediaButtons.next} style={styles.button} />
           </TouchableOpacity>
         </View>
-
       </View>
     </SafeAreaView>
   );
