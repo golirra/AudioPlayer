@@ -12,6 +12,7 @@ import {
 import { useState, useEffect } from "react";
 import styles from "../styles/styles.js";
 import MediaButtons from "../styles/MediaButtons";
+import Slider from "@react-native-community/slider";
 
 const Playback = () => {
   const [sound, setSound] = useState();
@@ -141,6 +142,13 @@ const Playback = () => {
             <Image source={MediaButtons.next} style={styles.button} />
           </TouchableOpacity>
         </View>
+        <Slider
+          minimumValue={0}
+          maximumValue={songDuration}
+          onValueChange={(value) => {
+            console.log(songDuration);
+          }}
+        />
       </View>
     </SafeAreaView>
   );

@@ -14,7 +14,7 @@ export default function App() {
       <Stack.Navigator>
         <Stack.Screen
           name="Home screen"
-          component={LibraryInfo}
+          component={Playback}
           options={{
             title: "Library",
             headerStyle: {
