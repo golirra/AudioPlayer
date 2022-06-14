@@ -1,37 +1,48 @@
-import { StyleSheet } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { StyleSheet} from "react-native";
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
 import Api from "./components/Api.js";
 import Home from "./screens/Home.js";
 import Playback from "./components/Playback.js";
-import LibraryInfo from "./components/LibraryInfo.js";
+import Songs from "./screens/Songs.js";
 
 export default function App() {
   const Stack = createNativeStackNavigator();
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen
-          name="Home screen"
-          component={Playback}
-          options={{
-            title: "Library",
-            headerStyle: {
-              backgroundColor: "grey",
-              borderBottom: "1px solid",
+    <SafeAreaProvider>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen 
+            name="Home screen" 
+            component={Home}
+            options={{
+              title: 'Library',
+              headerStyle: {
+                backgroundColor: '#ecf7d9',
+              },
+              headerTintColor: 'black',
+              headerTitleStyle: {
+                fontWeight: 'bold',
+              },
+              headerTransparent: true,
+              headerTitleAlign: 'center',
+            }}
+          />
+          <Stack.Screen
+            name="Api"
+            component={Playback}
+          />
+          <Stack.Screen
+            name="Songs"
+            component={Songs}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+      </SafeAreaProvider>
 
-              borderColor: "black",
-            },
-            headerTintColor: "#fff",
-            headerTitleStyle: {
-              fontWeight: "bold",
-            },
-          }}
-        />
-        <Stack.Screen name="Api" component={Playback} />
-      </Stack.Navigator>
-    </NavigationContainer>
   );
 } //end app
 

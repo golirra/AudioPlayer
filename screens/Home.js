@@ -1,49 +1,59 @@
-import { Text, View, Button } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { Text, View } from "react-native";
 import { StyleSheet, TouchableOpacity } from "react-native";
+import { useHeaderHeight } from '@react-navigation/elements';
+import { ListItem, Icon } from '@rneui/themed'
+
 
 function Home({ navigation }) {
-  const Options = [{
-    id:0,
-    name: 'Artists',
-},  {
-    id:1,
-    name: 'Songs',
-},  {
-    id:2,
-    name: 'Albums',
-},  {
-    id:3,
-    name: 'Playlists',
-},  {
-    id:4,
-    name: 'Genres',
-}
-];
+  const headerHeight = useHeaderHeight();
+
+  const Options = [
+    {
+      id:0,
+      name: 'Artists',
+      icon: 'user'
+    },  {
+        id:1,
+        name: 'Songs',
+        icon: 'music'
+    },  {
+        id:2,
+        name: 'Albums',
+        icon: 'book'
+    },  {
+        id:3,
+        name: 'Playlists',
+        icon: 'list'
+    },  {
+        id:4,
+        name: 'Genres',
+        icon: 'box'
+    }
+    ];
+
   return (
-    <View style={styles.container}>
+    <View style={{ marginTop: headerHeight, borderTopWidth: 1, borderTopColor: '#dcdcdc' }}>
       {Options.map((Options) => 
-        <View key={Options.id} style={styles.options}>
-        <TouchableOpacity>
-          <Text style={{ fontSize: 15 }}>{Options.name}</Text>
-        </TouchableOpacity>
-        </View>
+      <TouchableOpacity key={Options.id}>
+        <ListItem bottomDivider>
+        <Icon type='feather' name={Options.icon} />
+        <ListItem.Content>
+          <ListItem.Title>{Options.name}</ListItem.Title>
+        </ListItem.Content>
+      </ListItem>
+      </TouchableOpacity>
       )}
 
         <View>
-          <Text style={{ fontSize: 20, fontWeight: 'bold', padding: 10}}>Recently Added</Text>
+          <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', marginTop: 20}}>Recently Added</Text>
         </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    height: "100%",
-  },
-
   options: {
-    padding: 20,
+    padding: 30,
     borderBottomColor: '#dcdcdc',
     borderBottomWidth: 1,
   },

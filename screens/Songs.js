@@ -1,12 +1,10 @@
-import { Text, View } from 'react-native'
-import React, { Component } from 'react'
+import LibraryInfo from '../components/LibraryInfo'
+import { View, Text } from 'react-native'
 
-export default class Songs extends Component {
-    render() {
+export default function Songs() {
     return (
         <View>
             <Text>Songs</Text>
         </View>
-        )
-    }
+    )
 }

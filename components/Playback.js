@@ -1,7 +1,6 @@
 import { Audio } from "expo-av";
 
 import {
-  SafeAreaView,
   Text,
   View,
   TouchableOpacity,
@@ -94,7 +93,6 @@ const Playback = () => {
   };
 
   return (
-    <SafeAreaView>
       <View style={styles.container}>
         <Button
           title="Track Select Placeholder/LoadSound"
@@ -150,7 +148,6 @@ const Playback = () => {
           }}
         />
       </View>
-    </SafeAreaView>
   );
 };
 
