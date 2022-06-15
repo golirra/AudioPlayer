@@ -1,8 +1,9 @@
-import { useEffect } from "react";
-import { Button } from "react-native";
+import { useState, useEffect } from "react";
+import { Button, View } from "react-native";
 import * as MediaLibrary from "expo-media-library";
 
 export default function LibraryInfo() {
+  const [media, setMedia] = useState();
   const getPermission = async () => {
     const permission = await MediaLibrary.getPermissionsAsync();
     if (permission.granted) {
@@ -24,6 +25,13 @@ export default function LibraryInfo() {
       });
 
       console.log(media);
+
+      media = await MediaLibrary.getAssetsAsync({
+        mediaType: "audio",
+        first: media.totalCount,
+      });
+
+      setMedia({ ...media, audioFiles: media.assets });
     } catch (err) {
       console.log("Error: Must be on mobile");
     }
