@@ -29,8 +29,6 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 30,
   },
-
-
 });
 
 export default styles;

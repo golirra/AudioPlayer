@@ -1,12 +1,13 @@
-import { StyleSheet} from "react-native";
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { StyleSheet } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import Api from "./components/Api.js";
 import Home from "./screens/Home.js";
 import Playback from "./components/Playback.js";
 import Songs from "./screens/Songs.js";
+import LibraryInfo from "./components/LibraryInfo.js";
 
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -15,36 +16,29 @@ export default function App() {
     <SafeAreaProvider>
       <NavigationContainer>
         <Stack.Navigator>
-          <Stack.Screen 
-            name="Home screen" 
-            component={Home}
+          <Stack.Screen
+            name="Home screen"
+            component={Playback}
             options={{
-              title: 'Library',
+              title: "Library",
               headerStyle: {
-                backgroundColor: '#ecf7d9',
+                backgroundColor: "#ecf7d9",
               },
-              headerTintColor: 'black',
+              headerTintColor: "black",
               headerTitleStyle: {
-                fontWeight: 'bold',
+                fontWeight: "bold",
               },
               headerTransparent: true,
-              headerTitleAlign: 'center',
+              headerTitleAlign: "center",
             }}
           />
-          <Stack.Screen
-            name="Api"
-            component={Playback}
-          />
-          <Stack.Screen
-            name="Songs"
-            component={Songs}
-          />
+          <Stack.Screen name="Api" component={Playback} />
+          <Stack.Screen name="Songs" component={Songs} />
         </Stack.Navigator>
       </NavigationContainer>
-      </SafeAreaProvider>
-
+    </SafeAreaProvider>
   );
-} //end app
+}
 
 const styles = StyleSheet.create({
   container: {
