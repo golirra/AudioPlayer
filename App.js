@@ -1,24 +1,25 @@
 import { StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SongProvider } from "./context/SongContext.js";
 
 import Api from "./components/Api.js";
 import Home from "./screens/Home.js";
 import Playback from "./components/Playback.js";
 import Songs from "./screens/Songs.js";
 import LibraryInfo from "./components/LibraryInfo.js";
+import Footer from "./components/Footer.js";
 
 export default function App() {
   const Stack = createNativeStackNavigator();
 
   return (
-    <SafeAreaProvider>
+    <SongProvider>
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen
             name="Home screen"
-            component={Playback}
+            component={Home}
             options={{
               title: "Library",
               headerStyle: {
@@ -28,15 +29,40 @@ export default function App() {
               headerTitleStyle: {
                 fontWeight: "bold",
               },
-              headerTransparent: true,
-              headerTitleAlign: "center",
             }}
           />
-          <Stack.Screen name="Api" component={Playback} />
-          <Stack.Screen name="Songs" component={Songs} />
+          <Stack.Screen 
+            name="Api" 
+            component={Playback} 
+            options={{
+              title: "Playback",
+              headerStyle: {
+                backgroundColor: "#ecf7d9",
+              },
+              headerTintColor: "black",
+              headerTitleStyle: {
+                fontWeight: "bold",
+              },
+            }}
+          />
+          <Stack.Screen 
+            name="Songs" 
+            component={Songs}
+            options={{
+              title: "Playback",
+              headerStyle: {
+                backgroundColor: "#ecf7d9",
+              },
+              headerTintColor: "black",
+              headerTitleStyle: {
+                fontWeight: "bold",
+              },
+            }}
+          />
         </Stack.Navigator>
+          <Footer />
       </NavigationContainer>
-    </SafeAreaProvider>
+    </SongProvider>
   );
 }
 

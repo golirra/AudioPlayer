@@ -4,7 +4,9 @@ import * as MediaLibrary from "expo-media-library";
 
 export default function LibraryInfo() {
   const [media, setMedia] = useState();
+  
   const getPermission = async () => {
+
     const permission = await MediaLibrary.getPermissionsAsync();
     if (permission.granted) {
       getAudioFiles();
@@ -14,9 +16,6 @@ export default function LibraryInfo() {
     }
     console.log(permission);
   };
-  useEffect(() => {
-    getPermission();
-  }, []);
 
   const getAudioFiles = async () => {
     try {

@@ -1,38 +1,41 @@
 import { Audio } from "expo-av";
-
 import {
-  SafeAreaView,
   Text,
   View,
   TouchableOpacity,
   Button,
   Image,
 } from "react-native";
-import { useHeaderHeight } from "@react-navigation/elements";
 import { useState, useEffect, useContext } from "react";
+import { SongContext } from '../context/SongContext';
+
 import styles from "../styles/styles.js";
 import MediaButtons from "../styles/MediaButtons";
 import Slider from "@react-native-community/slider";
 
-const Playback = () => {
-  const headerHeight = useHeaderHeight();
-  const [sound, setSound] = useState();
-  const [playing, setPlaying] = useState(false);
+const Playback = () => {  
+
+  const {sound, setSound} = useContext(SongContext);
+  const {playing, setPlaying} = useContext(SongContext);
   let [songPosition, setSongPosition] = useState(0); //not supposed to use let with usestate
   let [songDuration, setSongDuration] = useState(0);
   let [seekBarPos, setSeekBarPos] = useState(0);
 
-  const loadSound = async () => {
-    console.log("Loading Sound");
-    const { sound } = await Audio.Sound.createAsync(
-      require("../assets/me.mp3"),
-      {
-        shouldPlay: true,
-      }
-    );
-    setSound(sound);
-  };
 
+  const loadSound = async () => {
+    if(sound) {
+      console.log('sound already exists - unload it')
+    } else {
+      console.log("Loading Sound");
+      const { sound } = await Audio.Sound.createAsync(
+        require("../assets/Songs/me.mp3"),
+        {
+          shouldPlay: false,
+        }
+      );
+      setSound(sound);
+    }
+  };
   const playPauseSound = async () => {
     if (sound) {
       if (!playing) {
@@ -45,34 +48,41 @@ const Playback = () => {
     }
   };
 
-  useEffect(() => {
+  const prevSound = async () => {
+    console.log('pressed prev');
+    if (sound) {
+      sound.replayAsync();
+    } else {
+      //do nothing
+    }
+  }
+
+  /* useEffect(() => {
     return sound
       ? () => {
           console.log("Unloading Sound");
           sound.unloadAsync();
         }
       : undefined;
-  }, [sound]);
+  }, [sound]); */
 
   const songPos = async (position) => {
-    let status = await sound.getStatusAsync();
-    sound.setStatusAsync({ positionMillis: position });
-  };
-
-  const getSongPos = async () => {
-    let status = await sound.getStatusAsync();
-    return status.PositionMillis;
-  };
-
-  const getSongDuration = async () => {
-    let status = await sound.getStatusAsync();
-    setSongDuration(status.durationMillis);
-    return status.durationMillis;
+    if(sound) {
+      sound.setStatusAsync({ positionMillis: position });
+    } else {
+      //do nothing
+    }
   };
 
   /* it works but the logic is off, 
   need to get song duration before song plays */
   useEffect(() => {
+    const getSongDuration = async () => {
+      let status = await sound.getStatusAsync();
+      setSongDuration(status.durationMillis);
+  
+      return status.durationMillis;
+    };
     if (sound) {
       getSongDuration();
     }
@@ -107,64 +117,60 @@ const Playback = () => {
   }, [playing]);
 
   return (
-    <SafeAreaView style={{ marginTop: headerHeight }}>
-      <View style={styles.container}>
+    <View style={styles.container}>
+      <View>
         <Button
           title="Track Select Placeholder/LoadSound"
           onPress={loadSound}
         />
-        <View style={styles.container}>
+        <View style={styles.playbackContainer}>
           <Image
             style={styles.albumCover}
             source={require("../assets/cover.jpg")}
           />
-        </View>
-        <View style={{ justifyContent: "center" }}>
-          <Text style={{ fontSize: 40, fontWeight: "bold" }}>
-            {songPosition}
-          </Text>
-          <Text
-            style={{
-              fontSize: 40,
-              left: 300,
-              position: "absolute",
-            }}
-          >
-            {millisToMinutesAndSeconds(songDuration)}
-          </Text>
-        </View>
+          <View style={{ justifyContent: "center", flexDirection: 'row', marginTop: 30 }}>
+            <Text style={{ fontSize: 15}}>
+              {songPosition}
+            </Text>
+            <Slider
+              value={seekBarPos}
+              style={{ width: 220 }}
+              minimumValue={0}
+              maximumValue={1}
+              onSlidingComplete={(value) => {
+                songPos(value * songDuration);
+              }}
+            />
+            <Text
+              style={{ fontSize: 15 }}
+            >
+              {millisToMinutesAndSeconds(songDuration)}
+            </Text>
+          </View>
 
-        <View style={{ flexDirection: "row" }}>
-          <TouchableOpacity style={styles.buttonContainer}>
-            <Image source={MediaButtons.previous} style={styles.button} />
-          </TouchableOpacity>
+          <View style={{ flexDirection: "row" }}>
+            <TouchableOpacity style={styles.buttonContainer} onPress={prevSound}>
+              <Image source={MediaButtons.previous} style={styles.button} />
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.buttonContainer}
-            onPress={playPauseSound}
-          >
-            {playing ? (
-              <Image source={MediaButtons.pause} style={styles.button} />
-            ) : (
-              <Image source={MediaButtons.play} style={styles.button} />
-            )}
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.buttonContainer}
+              onPress={playPauseSound}
+            >
+              {playing ? (
+                <Image source={MediaButtons.pause} style={styles.button} />
+              ) : (
+                <Image source={MediaButtons.play} style={styles.button} />
+              )}
+            </TouchableOpacity>
 
-          <TouchableOpacity style={styles.buttonContainer}>
-            <Image source={MediaButtons.next} style={styles.button} />
-          </TouchableOpacity>
+            <TouchableOpacity style={styles.buttonContainer}>
+              <Image source={MediaButtons.next} style={styles.button} />
+            </TouchableOpacity>
+          </View>
         </View>
-        <Slider
-          value={seekBarPos}
-          style={{ width: 200 }}
-          minimumValue={0}
-          maximumValue={1}
-          onSlidingComplete={(value) => {
-            songPos(value * songDuration);
-          }}
-        />
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 

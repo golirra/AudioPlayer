@@ -1,11 +1,11 @@
 import { Text, View } from "react-native";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { TouchableOpacity } from "react-native";
 import { useHeaderHeight } from '@react-navigation/elements';
 import { ListItem, Icon } from '@rneui/themed'
+import styles from "../styles/styles.js";
 
 
 function Home({ navigation }) {
-  const headerHeight = useHeaderHeight();
 
   const Options = [
     {
@@ -32,9 +32,9 @@ function Home({ navigation }) {
     ];
 
   return (
-    <View style={{ marginTop: headerHeight, borderTopWidth: 1, borderTopColor: '#dcdcdc' }}>
+    <View style={styles.container}>
       {Options.map((Options) => 
-      <TouchableOpacity key={Options.id}>
+      <TouchableOpacity key={Options.id} onPress={() => navigation.navigate(Options.name)}>
         <ListItem bottomDivider>
         <Icon type='feather' name={Options.icon} />
         <ListItem.Content>
@@ -50,14 +50,5 @@ function Home({ navigation }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  options: {
-    padding: 30,
-    borderBottomColor: '#dcdcdc',
-    borderBottomWidth: 1,
-  },
-
-});
 
 export default Home;

@@ -1,21 +1,25 @@
 import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
+
   container: {
+    borderTopWidth: 1, 
+    borderTopColor: '#dcdcdc',
+  },
+
+  playbackContainer: {
     alignItems: "center",
-    backgroundColor: "#778899",
-    padding: 10,
+    marginTop: 10
   },
 
   button: {
-    width: 50,
-    height: 50,
-    color: "black",
+    width: 60,
+    height: 60,
   },
 
   buttonContainer: {
-    marginBottom: 3,
-    padding: 10,
+    marginTop: 10,
+    padding: 20,
   },
 
   albumCover: {
