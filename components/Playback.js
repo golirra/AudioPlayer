@@ -17,9 +17,9 @@ const Playback = () => {
 
   const {sound, setSound} = useContext(SongContext);
   const {playing, setPlaying} = useContext(SongContext);
-  let [songPosition, setSongPosition] = useState(0); //not supposed to use let with usestate
+  let {songPosition, setSongPosition} = useContext(SongContext);//not supposed to use let with usestate
   let [songDuration, setSongDuration] = useState(0);
-  let [seekBarPos, setSeekBarPos] = useState(0);
+  let {seekBarPos, setSeekBarPos} = useContext(SongContext);
 
 
   const loadSound = async () => {
@@ -105,15 +105,11 @@ const Playback = () => {
           setSongPosition(millisToMinutesAndSeconds(status.positionMillis)); //math here probably wrong
           setSeekBarPos(status.positionMillis / status.durationMillis);
         }, 1000);
-
-        console.log("something is playing");
+        console.log("playing");
       } else {
         console.log("pausing");
       }
     }
-    return () => {
-      clearInterval(songPosition);
-    };
   }, [playing]);
 
   return (
