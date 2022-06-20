@@ -1,48 +1,26 @@
-import { useState, useEffect } from "react";
-import { Button, View } from "react-native";
-import * as MediaLibrary from "expo-media-library";
+import { View, Text, TouchableOpacity } from "react-native";
+import { useNavigation } from '@react-navigation/native';
+import { ListItem, Icon } from '@rneui/themed'
 
-export default function LibraryInfo() {
-  const [media, setMedia] = useState();
-  
-  const getPermission = async () => {
-
-    const permission = await MediaLibrary.getPermissionsAsync();
-    if (permission.granted) {
-      getAudioFiles();
-    }
-    if (!permission.granted && permission.canAskAgain) {
-      await MediaLibrary.requestPermissionsAsync();
-    }
-    console.log(permission);
-  };
-
-  const getAudioFiles = async () => {
-    try {
-      const media = await MediaLibrary.getAssetsAsync({
-        mediaType: "audio",
-      });
-
-      console.log(media);
-
-      media = await MediaLibrary.getAssetsAsync({
-        mediaType: "audio",
-        first: media.totalCount,
-      });
-
-      setMedia({ ...media, audioFiles: media.assets });
-    } catch (err) {
-      console.log("Error: Must be on mobile");
-    }
-  };
+export default function LibraryInfo( { mediaData } ) {
+  const navigation = useNavigation();
 
   return (
     <View>
-      <Button
-        title="media library assets console log"
-        onPress={getAudioFiles}
-      />
-      <Button title="media library permissions" onPress={getPermission} />
+      <TouchableOpacity 
+        key={mediaData.id}  
+        onPress={() => navigation.navigate(
+          'Now Playing',
+          { location: mediaData.uri }
+        )}
+      >
+        <ListItem bottomDivider>
+        <Icon type='feather' name='music'/>
+        <ListItem.Content>
+          <ListItem.Title>{mediaData.filename}</ListItem.Title>
+        </ListItem.Content>
+      </ListItem>
+      </TouchableOpacity>
     </View>
   );
 }

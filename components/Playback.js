@@ -13,7 +13,8 @@ import styles from "../styles/styles.js";
 import MediaButtons from "../styles/MediaButtons";
 import Slider from "@react-native-community/slider";
 
-const Playback = () => {  
+const Playback = ( {route} ) => {  
+  console.log(route.params.location)
 
   const {sound, setSound} = useContext(SongContext);
   const {playing, setPlaying} = useContext(SongContext);

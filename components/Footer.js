@@ -9,7 +9,7 @@ const Footer = () => {
 
     return (
         <View flexDirection='row' justifyContent='center' style={{height: 80, borderTopWidth: 1, borderTopColor: '#dcdcdc'}}>
-            <TouchableOpacity onPress={() => navigation.navigate('Api')}>
+            <TouchableOpacity onPress={() => navigation.navigate('Now Playing')}>
                 <Text>Playback: {playing.toString()}</Text>
             </TouchableOpacity>
         </View>
