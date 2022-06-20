@@ -11,7 +11,9 @@ export default function LibraryInfo( { mediaData } ) {
         key={mediaData.id}  
         onPress={() => navigation.navigate(
           'Now Playing',
-          { location: mediaData.uri }
+          { location: mediaData.uri,
+            songName: mediaData.filename,
+          }
         )}
       >
         <ListItem bottomDivider>

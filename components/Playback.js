@@ -13,8 +13,7 @@ import styles from "../styles/styles.js";
 import MediaButtons from "../styles/MediaButtons";
 import Slider from "@react-native-community/slider";
 
-const Playback = ( {route} ) => {  
-  console.log(route.params.location)
+const Playback = ( {route} ) => { 
 
   const {sound, setSound} = useContext(SongContext);
   const {playing, setPlaying} = useContext(SongContext);
@@ -22,14 +21,13 @@ const Playback = ( {route} ) => {
   let [songDuration, setSongDuration] = useState(0);
   let {seekBarPos, setSeekBarPos} = useContext(SongContext);
 
-
   const loadSound = async () => {
     if(sound) {
-      console.log('sound already exists - unload it')
+      console.log('sound already exists - unloading')
     } else {
       console.log("Loading Sound");
       const { sound } = await Audio.Sound.createAsync(
-        require("../assets/Songs/me.mp3"),
+        { uri: route.params.location },
         {
           shouldPlay: false,
         }
@@ -108,7 +106,7 @@ const Playback = ( {route} ) => {
         }, 1000);
         console.log("playing");
       } else {
-        console.log("pausing");
+        console.log("pausing or not playing");
       }
     }
   }, [playing]);
@@ -125,6 +123,8 @@ const Playback = ( {route} ) => {
             style={styles.albumCover}
             source={require("../assets/cover.jpg")}
           />
+          <Text>{route.params.songName}</Text>
+          <Text>{route.params.filename}</Text>
           <View style={{ justifyContent: "center", flexDirection: 'row', marginTop: 30 }}>
             <Text style={{ fontSize: 15}}>
               {songPosition}
