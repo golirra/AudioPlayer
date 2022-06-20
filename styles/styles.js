@@ -9,7 +9,9 @@ const styles = StyleSheet.create({
 
   playbackContainer: {
     alignItems: "center",
-    marginTop: 10
+    justifyContent: "center",
+    marginTop: 60,
+    fontWeight: 'bold'
   },
 
   button: {
