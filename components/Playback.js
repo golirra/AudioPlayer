@@ -1,131 +1,190 @@
-import React, { Component } from "react";
-import { Audio, AVPlaybackStatus } from "expo-av";
-import {
-  SafeAreaView,
-  Text,
-  Switch,
-  View,
-  TouchableOpacity,
-  StyleSheet,
-  Button,
-  Image,
-} from "react-native";
-import { useState, useEffect } from "react";
-import * as MediaLibrary from "expo-media-library";
+import { Audio } from "expo-av";
+import { Text, View, TouchableOpacity, Button, Image } from "react-native";
+import { useState, useEffect, useContext, useCallback } from "react";
+import { SongContext } from "../context/SongContext";
+import MusicInfo from "expo-music-info";
+
 import styles from "../styles/styles.js";
+import MediaButtons from "../styles/MediaButtons";
+import Slider from "@react-native-community/slider";
 
-const Playback = ({ data }) => {
+const Playback = ({ route }) => {
+  const { song } = useContext(SongContext);
+  const [oldSong, setOldSong] = useState();
   const [sound, setSound] = useState();
-  const [playing, setPlaying] = useState(false);
-  const [buttonText, setButtonText] = useState("play");
+  const { playing, setPlaying } = useContext(SongContext);
+  let { songPosition, setSongPosition } = useContext(SongContext); //not supposed to use let with usestate
+  let [songDuration, setSongDuration] = useState(0);
+  let { seekBarPos, setSeekBarPos } = useContext(SongContext);
+  let isSubscribed = false;
+  let [songLoaded, setSongLoaded] = useState(false);
 
-  async function loadSound() {
-    console.log("Loading Sound");
-    const { sound } = await Audio.Sound.createAsync(
-      require("../assets/me.mp3")
-    );
-
-    setSound(sound);
-  }
   useEffect(() => {
-    return sound
-      ? () => {
-          console.log("Unloading Sound");
-          sound.unloadAsync();
-        }
-      : undefined;
-  }, [sound]);
+    const getSongDuration = async () => {
+      let status = await sound.getStatusAsync();
+      setSongDuration(status.durationMillis);
 
-  const handleClick = () =>
-    playing ? setButtonText("play") : setButtonText("pause");
-
-    const songStatus = async () => {
-      const status = await sound.getStatusAsync();
-      console.log(status.positionMillis);
+      return status.durationMillis;
     };
+    if (sound) {
+      getSongDuration();
+    }
+  });
 
-  async function playPauseSound() {
-    if(sound){
-      console.log('sound loaded')
-      await sound.playAsync();
-      setPlaying(true);
-      const interval = setInterval(() => {
-        songStatus();
-      }, 1000);
-      if (playing) {
-        await sound.pauseAsync();
-        setPlaying(false);
-        console.log("sound paused")
-      }
-    } else {
-      console.log('sound not loaded')
-      }
-    }
-
-  const getPermission = async () => {
-    const permission = await MediaLibrary.getPermissionsAsync();
-    if (permission.granted) {
-      getAudioFiles();
-    }
-    if (!permission.granted && permission.canAskAgain) {
-      await MediaLibrary.requestPermissionsAsync();
-    }
-    console.log(permission);
-  };
   useEffect(() => {
-    getPermission();
+    if (sound) {
+      if (playing) {
+        songPosition = setInterval(async () => {
+          let status = await sound.getStatusAsync();
+          //console.log(status.positionMillis);
+          setSongPosition(millisToMinutesAndSeconds(status.positionMillis)); //math here probably wrong
+          setSeekBarPos(status.positionMillis / status.durationMillis);
+        }, 1000);
+        console.log("playing: playback.js");
+      } else {
+        console.log("pausing or not playing: playback.js");
+      }
+    }
+  }, [playing]);
+
+  useEffect(() => {
+    loadSound();
   }, []);
 
-  const getAudioFiles = async () => {
-    try {
-      const media = await MediaLibrary.getAssetsAsync({
-        mediaType: "audio",
-      });
-
-      console.log(media);
-    } catch (err) {
-      console.log("Error: Must be on mobile");
+  const loadSound = async () => {
+    if (!songLoaded) {
+      console.log("Loading Sound");
+      const { sound, status } = await Audio.Sound.createAsync(
+        { uri: route.params.location },
+        {
+          shouldPlay: false,
+        }
+      );
+      setSound(sound);
+      setSongLoaded(true);
+      isSubscribed = true;
+      console.log(status);
+    }
+    //load sound different from current one
+    if (songLoaded) {
+      console.log("Reminder: Playing now will throw an error.");
+      await sound.unloadAsync();
+      isSubscribed = false;
+      setSound(null);
+      setSongLoaded(false);
     }
   };
 
+  let albumArt = async () => {
+    let metadata = await MusicInfo.getMusicInfoAsync(
+      "file:///storage/emulated/0/Music/(2021) Glow On/02. Turnstile - Blackout.mp3",
+      {
+        title: true,
+        artist: true,
+        album: true,
+        genre: true,
+        picture: true,
+      }
+    );
+    console.log(metadata);
+  };
+
+  const playPauseSound = async () => {
+    if (sound) {
+      if (!playing) {
+        setPlaying(true);
+        await sound.playAsync();
+      } else {
+        setPlaying(false);
+        await sound.pauseAsync();
+      }
+    }
+  };
+
+  const prevSound = async () => {
+    console.log("pressed prev: playback.js");
+    if (sound) {
+      sound.replayAsync();
+    } else {
+      //do nothing
+    }
+  };
+
+  const songPos = async (position) => {
+    if (sound) {
+      sound.setStatusAsync({ positionMillis: position });
+    } else {
+      //do nothing
+    }
+  };
+
+  function millisToMinutesAndSeconds(millis) {
+    let minutes = Math.floor(millis / 60000);
+    let seconds = ((millis % 60000) / 1000).toFixed(0);
+    return seconds == 60
+      ? minutes + 1 + ":00"
+      : minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+  }
+
   return (
-    <SafeAreaView>
-      <View style={styles.container}>
-        <Button
-          title="Track Select Placeholder/LoadSound"
-          onPress={loadSound}
-        />
-        <View style={styles.container}>
+    <View style={styles.container}>
+      <View>
+        <Button title="art" onPress={albumArt} />
+        <View style={styles.playbackContainer}>
           <Image
             style={styles.albumCover}
             source={require("../assets/cover.jpg")}
           />
+          <Text>{route.params.songName}</Text>
+          <Text>{route.params.filename}</Text>
+          <View
+            style={{
+              justifyContent: "center",
+              flexDirection: "row",
+              marginTop: 30,
+            }}
+          >
+            <Text style={{ fontSize: 15 }}>{songPosition}</Text>
+            <Slider
+              value={seekBarPos}
+              style={{ width: 220 }}
+              minimumValue={0}
+              maximumValue={1}
+              onSlidingComplete={(value) => {
+                songPos(value * songDuration);
+              }}
+            />
+            <Text style={{ fontSize: 15 }}>
+              {millisToMinutesAndSeconds(songDuration)}
+            </Text>
+          </View>
+
+          <View style={{ flexDirection: "row" }}>
+            <TouchableOpacity
+              style={styles.buttonContainer}
+              onPress={prevSound}
+            >
+              <Image source={MediaButtons.previous} style={styles.button} />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.buttonContainer}
+              onPress={playPauseSound}
+            >
+              {playing ? (
+                <Image source={MediaButtons.pause} style={styles.button} />
+              ) : (
+                <Image source={MediaButtons.play} style={styles.button} />
+              )}
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.buttonContainer}>
+              <Image source={MediaButtons.next} style={styles.button} />
+            </TouchableOpacity>
+          </View>
         </View>
-        <TouchableOpacity
-          style={styles.buttonContainer}
-          onPress={playPauseSound}
-        >
-          <Text style={styles.text}>Play/Pause</Text>
-        </TouchableOpacity>
-        <Button
-          title="media library assets console log"
-          onPress={getAudioFiles}
-        />
-        <Button title="media library permissions" onPress={getPermission} />
-        <Button
-          title="test"
-          onPress={() => {
-            console.log(MyContext);
-          }}
-        />
-        <Button
-          title="song status"
-          onPress={() => {
-            songStatus();
-          }}
-        />
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 

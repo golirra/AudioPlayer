@@ -1,33 +1,34 @@
 import { StyleSheet } from "react-native";
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
 
+const styles = StyleSheet.create({
+
+  container: {
+    borderTopWidth: 1, 
+    borderTopColor: '#dcdcdc',
+  },
+
+  playbackContainer: {
     alignItems: "center",
-    backgroundColor: "#ecf7d9",
-    padding: 10,
+    justifyContent: "center",
+    marginTop: 60,
+    fontWeight: 'bold'
   },
 
   button: {
-    flex: 1,
-    width: 10,
-    height: 50,
-    color: "black",
+    width: 60,
+    height: 60,
   },
+
   buttonContainer: {
-    width: 500,
-    color: "red",
-    elevation: 8,
-    backgroundColor: "#000000",
-    borderRadius: 2,
-    paddingVertical: 5,
-    paddingHorizontal: 0,
+    marginTop: 10,
+    padding: 20,
   },
+
   albumCover: {
-    flex: 1,
     width: 300,
     height: 300,
   },
+
   text: {
     textAlign: "center",
     justifyContent: "center",
