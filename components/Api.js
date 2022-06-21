@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Audio } from "expo-av";
 import {
+  Image,
   SafeAreaView,
   FlatList,
   Text,
@@ -12,30 +13,36 @@ import {
 import { useState, useEffect } from "react";
 import axios from "axios";
 import styles from "../styles/styles";
-import { API_KEY, API_SECRET } from "@env";
+import { API_TOKEN } from "@env";
 
 const Api = () => {
-  const cors = require("cors");
   const [artists, setArtists] = useState([]);
+  const [coverArt, setCoverArt] = useState();
+
+  const instance = axios.create({
+    baseURL: "https://api.discogs.com/database/search",
+    timeout: 10000,
+    params: {
+      token: "jTelrhsWkQGOLfipTFiiSGpfpVTivrvlDvjRbsdT",
+    },
+  });
 
   useEffect(() => {
     const getArtists = () => {
-      axios
-        .get("https://api.discogs.com/artists/3317315/releases", {
+      instance
+        .get("https://api.discogs.com/masters/173765", {
           headers: {
             "Content-Type": "application/json",
-            //"User-Agent": "ReactNativeAudio/0.1 +Axios 0.27.2",
-
-            Authorization:
-              "Discogs key=" + { API_KEY } + ",secret=" + { API_SECRET },
+            //"User-Agent": "ReactNativeAudio/0.1",
           },
         })
         .then((response) => {
+          console.log(response);
           setArtists(response.data);
-          console.log(response.data);
+          console.log(response.data.releases[0]);
         })
         .catch((err) => {
-          console.log(err + "oh no");
+          console.log("Probably requesting too fast or improper URL" + err);
         });
     };
     getArtists();
@@ -44,6 +51,12 @@ const Api = () => {
   return (
     <SafeAreaView>
       <View>
+        <Image
+          style={{ height: 500, width: 500 }}
+          source={{
+            uri: "https://i.discogs.com/3aV4_aoB--hDPrwXzpyJ65pCOCsuqfrlXljchbuNpNM/rs:fit/g:sm/q:90/h:600/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTYzOTkw/NTItMTQyMTM5NDgw/Ny01MDIwLmpwZWc.jpeg",
+          }}
+        />
         <FlatList
           data={artists}
           renderItem={({ item }) => <Playback data={item} />}

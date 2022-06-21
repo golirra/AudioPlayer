@@ -83,7 +83,7 @@ const Playback = ({ route }) => {
         artist: true,
         album: true,
         genre: true,
-        picture: true,
+        picture: false,
       }
     );
     console.log(metadata);
@@ -129,7 +129,6 @@ const Playback = ({ route }) => {
   return (
     <View style={styles.container}>
       <View>
-        <Button title="art" onPress={albumArt} />
         <View style={styles.playbackContainer}>
           <Image
             style={styles.albumCover}

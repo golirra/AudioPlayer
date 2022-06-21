@@ -15,6 +15,7 @@ import Home from "./screens/Home.js";
 import Songs from "./screens/Songs.js";
 import Playlists from "./screens/Playlists";
 import Genres from "./screens/Genres";
+import Api from "./components/Api.js";
 
 export default function App() {
   const [allMedia, setAllMedia] = useState([]);
@@ -68,7 +69,7 @@ export default function App() {
         <Stack.Navigator>
           <Stack.Screen
             name="Home screen"
-            component={Home}
+            component={Api}
             options={{
               title: "Library",
               headerStyle: {
