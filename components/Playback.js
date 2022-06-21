@@ -16,6 +16,7 @@ const Playback = ({ route }) => {
   let [songDuration, setSongDuration] = useState(0);
   let { seekBarPos, setSeekBarPos } = useContext(SongContext);
   let isSubscribed = false;
+  let [songLoaded, setSongLoaded] = useState(false);
 
   useEffect(() => {
     const getSongDuration = async () => {
@@ -45,10 +46,12 @@ const Playback = ({ route }) => {
     }
   }, [playing]);
 
+  useEffect(() => {
+    loadSound();
+  }, []);
+
   const loadSound = async () => {
-    if (sound) {
-      console.log("sound already exists - unloading: playback.js");
-    } else {
+    if (!songLoaded) {
       console.log("Loading Sound");
       const { sound, status } = await Audio.Sound.createAsync(
         { uri: route.params.location },
@@ -57,15 +60,17 @@ const Playback = ({ route }) => {
         }
       );
       setSound(sound);
+      setSongLoaded(true);
       isSubscribed = true;
       console.log(status);
     }
     //load sound different from current one
-    if (sound) {
+    if (songLoaded) {
       console.log("Reminder: Playing now will throw an error.");
       await sound.unloadAsync();
       isSubscribed = false;
       setSound(null);
+      setSongLoaded(false);
     }
   };
 
