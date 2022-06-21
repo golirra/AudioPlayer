@@ -8,16 +8,47 @@ import MediaButtons from "../styles/MediaButtons";
 import Slider from "@react-native-community/slider";
 
 const Playback = ({ route }) => {
-  const { sound, setSound } = useContext(SongContext);
+  const { song } = useContext(SongContext);
+  const [oldSong, setOldSong] = useState();
+  const [sound, setSound] = useState();
   const { playing, setPlaying } = useContext(SongContext);
   let { songPosition, setSongPosition } = useContext(SongContext); //not supposed to use let with usestate
   let [songDuration, setSongDuration] = useState(0);
   let { seekBarPos, setSeekBarPos } = useContext(SongContext);
   let isSubscribed = false;
 
+  useEffect(() => {
+    const getSongDuration = async () => {
+      let status = await sound.getStatusAsync();
+      setSongDuration(status.durationMillis);
+
+      return status.durationMillis;
+    };
+    if (sound) {
+      getSongDuration();
+    }
+  });
+
+  useEffect(() => {
+    if (sound) {
+      if (playing) {
+        songPosition = setInterval(async () => {
+          let status = await sound.getStatusAsync();
+          //console.log(status.positionMillis);
+          setSongPosition(millisToMinutesAndSeconds(status.positionMillis)); //math here probably wrong
+          setSeekBarPos(status.positionMillis / status.durationMillis);
+        }, 1000);
+        console.log("playing: playback.js");
+      } else {
+        console.log("pausing or not playing: playback.js");
+      }
+    }
+  }, [playing]);
+
   const loadSound = async () => {
-    //no sound is loaded
-    if (!sound) {
+    if (sound) {
+      console.log("sound already exists - unloading: playback.js");
+    } else {
       console.log("Loading Sound");
       const { sound, status } = await Audio.Sound.createAsync(
         { uri: route.params.location },
@@ -51,7 +82,7 @@ const Playback = ({ route }) => {
   };
 
   const prevSound = async () => {
-    console.log("pressed prev");
+    console.log("pressed prev: playback.js");
     if (sound) {
       sound.replayAsync();
     } else {
@@ -67,21 +98,6 @@ const Playback = ({ route }) => {
     }
   };
 
-  useEffect(() => {
-    if (isSubscribed) {
-      const getSongDuration = async () => {
-        sound.stopAsync();
-        let status = await sound.getStatusAsync();
-        setSongDuration(status.durationMillis);
-
-        return status.durationMillis;
-      };
-      if (sound) {
-        getSongDuration();
-      }
-    }
-  }, [sound]);
-
   function millisToMinutesAndSeconds(millis) {
     let minutes = Math.floor(millis / 60000);
     let seconds = ((millis % 60000) / 1000).toFixed(0);
@@ -90,32 +106,9 @@ const Playback = ({ route }) => {
       : minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
   }
 
-  useEffect(() => {
-    if (isSubscribed) {
-      if (sound) {
-        if (playing) {
-          songPosition = setInterval(async () => {
-            let status = await sound.getStatusAsync();
-            //console.log(status.positionMillis);
-            setSongPosition(millisToMinutesAndSeconds(status.positionMillis)); //math here probably wrong
-            setSeekBarPos(status.positionMillis / status.durationMillis);
-          }, 1000);
-          console.log("playing");
-        } else {
-          console.log("pausing or not playing");
-        }
-      }
-    }
-  }, [playing]);
-
   return (
     <View style={styles.container}>
       <View>
-        <Button
-          title="Track Select Placeholder/LoadSound"
-          onPress={loadSound}
-        />
-
         <View style={styles.playbackContainer}>
           <Image
             style={styles.albumCover}
