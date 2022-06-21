@@ -1,56 +1,67 @@
-import { View, Text, TouchableOpacity } from 'react-native'
+import { View, Text, TouchableOpacity } from "react-native";
 import { useState, useEffect, useContext } from "react";
-import { useNavigation } from '@react-navigation/native';
-<<<<<<< HEAD
-<<<<<<< HEAD
-import { SongContext, SongProvider } from '../context/SongContext';
-=======
-import { SongContext } from '../context/SongContext';
-import styles from "../styles/styles.js";
->>>>>>> parent of 24c91f5 (footer changes)
-=======
-import { SongContext } from '../context/SongContext';
-import styles from "../styles/styles.js";
->>>>>>> parent of b6bc4b9 (Revert "pushing async storage")
+import { useNavigation } from "@react-navigation/native";
+import { SongContext } from "../context/SongContext";
+
+import { Icon } from "@rneui/themed";
 
 const Footer = () => {
-    const navigation = useNavigation();
-    const {playing} = useContext(SongContext);
-    const {song} = useContext(SongContext);
+  const navigation = useNavigation();
+  const { playing } = useContext(SongContext);
+  const { song } = useContext(SongContext);
 
-
-    return (
-<<<<<<< HEAD
-<<<<<<< HEAD
-        <View flexDirection='row' justifyContent='center' style={{height: 80, borderTopWidth: 1, borderTopColor: '#dcdcdc'}}>
-            <TouchableOpacity onPress={() => navigation.navigate('Now Playing')}>
-                <Text>Playback: {playing.toString()}</Text>
-            </TouchableOpacity>
-=======
-=======
->>>>>>> parent of b6bc4b9 (Revert "pushing async storage")
-        <View flexDirection='row' justifyContent='center' style={{height: 80, borderTopWidth: 1, borderTopColor: '#dcdcdc', backgroundColor: '#ecf7d9'}}>
-            {song ? 
-                <>
-                    <TouchableOpacity style={styles.buttonContainer} onPress={() => navigation.navigate('Now Playing', {
-                        songName: song
-                    })}>
-                        <Text>Playing: {song}</Text>
-                    </TouchableOpacity>
-                </> 
-            : 
-                <>
-                    <Text style={{marginTop: 30}}>
-                        Select a song.
-                    </Text>
-                </>
+  return (
+    <View
+      style={{
+        borderTopWidth: 1,
+        borderTopColor: "#dcdcdc",
+        backgroundColor: "#ecf7d9",
+        alignItems: "center",
+      }}
+    >
+      {song ? (
+        <>
+          <TouchableOpacity
+            style={{ padding: 20 }}
+            onPress={() =>
+              navigation.navigate("Now Playing", {
+                songName: song,
+              })
             }
-<<<<<<< HEAD
->>>>>>> parent of 24c91f5 (footer changes)
-=======
->>>>>>> parent of b6bc4b9 (Revert "pushing async storage")
-        </View>
-    )
-}
+          >
+            <Text>Playing: {song}</Text>
+          </TouchableOpacity>
+        </>
+      ) : (
+        <>
+          <Text style={{ padding: 20 }}>Select a song.</Text>
+        </>
+      )}
+      <View
+        style={{
+          width: "100%",
+          borderTopWidth: 1,
+          borderTopColor: "#dcdcdc",
+          height: 80,
+          alignItems: "center",
+          justifyContent: "center",
+          flexDirection: "row",
+        }}
+      >
+        <TouchableOpacity
+          style={{ paddingRight: 40 }}
+          onPress={() => navigation.navigate("Home screen")}
+        >
+          <Icon type="feather" name="home" />
+          <Text>Library</Text>
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <Icon type="feather" name="settings" />
+          <Text>Settings</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
 
-export default Footer
+export default Footer;
