@@ -2,6 +2,7 @@ import { Audio } from "expo-av";
 import { Text, View, TouchableOpacity, Button, Image } from "react-native";
 import { useState, useEffect, useContext, useCallback } from "react";
 import { SongContext } from "../context/SongContext";
+import MusicInfo from "expo-music-info";
 
 import styles from "../styles/styles.js";
 import MediaButtons from "../styles/MediaButtons";
@@ -74,6 +75,20 @@ const Playback = ({ route }) => {
     }
   };
 
+  let albumArt = async () => {
+    let metadata = await MusicInfo.getMusicInfoAsync(
+      "file:///storage/emulated/0/Music/(2021) Glow On/02. Turnstile - Blackout.mp3",
+      {
+        title: true,
+        artist: true,
+        album: true,
+        genre: true,
+        picture: true,
+      }
+    );
+    console.log(metadata);
+  };
+
   const playPauseSound = async () => {
     if (sound) {
       if (!playing) {
@@ -114,6 +129,7 @@ const Playback = ({ route }) => {
   return (
     <View style={styles.container}>
       <View>
+        <Button title="art" onPress={albumArt} />
         <View style={styles.playbackContainer}>
           <Image
             style={styles.albumCover}
