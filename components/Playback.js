@@ -22,6 +22,7 @@ const Playback = ({ route }) => {
   var [metadata, setMetadata] = useState();
 
   useEffect(() => {
+    //moved into the same useeffect, downside is more logic required so i logged everything to see what is running
     const getSongDuration = async () => {
       try {
         if (songLoaded) {
@@ -35,7 +36,7 @@ const Playback = ({ route }) => {
       } catch (err) {
         console.log(err + " getSongDuration hook");
       }
-        return songDuration;
+      return songDuration;
     };
 
     const loadSound = async () => {
@@ -55,10 +56,12 @@ const Playback = ({ route }) => {
         //console.log(status);
       } 
       
+      //checks to see if a song is loaded when it is selected
       if (songLoaded) {
         if (song === oldSong) {
           console.log('old song is the selected song');
         } else if (song !== oldSong) {
+          //trying to stop the song from playing when a new song is selected, it works when the song is not current playing
           sound.stopAsync();
           sound.unloadAsync();
           setSongLoaded(false);
@@ -67,6 +70,7 @@ const Playback = ({ route }) => {
       }
     }
 
+    //checks if the song is playing and sets the interval to update the songposition for the silderbar etc.
     if(playing) {
       songPosition = setInterval(async () => {
         let status = await sound.getStatusAsync();
@@ -74,6 +78,7 @@ const Playback = ({ route }) => {
         setSeekBarPos(status.positionMillis / status.durationMillis);
         console.log('interval is running');
       }, 1000);
+      //if interval is declared it will return a clear function
       return () => clearInterval(songPosition);
     }
 
@@ -81,6 +86,8 @@ const Playback = ({ route }) => {
     getSongDuration();
   }, [playing, songLoaded]);
 
+
+  //if setting a lot of states back to zero we can make a function
   const clearStates = () => {
     
   }
