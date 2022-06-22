@@ -54,7 +54,9 @@ const Api = () => {
         <Image
           style={{ height: 500, width: 500 }}
           source={{
-            uri: "https://i.discogs.com/3aV4_aoB--hDPrwXzpyJ65pCOCsuqfrlXljchbuNpNM/rs:fit/g:sm/q:90/h:600/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTYzOTkw/NTItMTQyMTM5NDgw/Ny01MDIwLmpwZWc.jpeg",
+            uri:
+              "https://i.discogs.com/3aV4_aoB--hDPrwXzpyJ65pCOCsuqfrlXljchbuNpNM/rs:" +
+              "fit/g:sm/q:90/h:600/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTYzOTkw/NTItMTQyMTM5NDgw/Ny01MDIwLmpwZWc.jpeg",
           }}
         />
         <FlatList

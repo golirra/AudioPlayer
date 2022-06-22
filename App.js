@@ -69,7 +69,7 @@ export default function App() {
         <Stack.Navigator>
           <Stack.Screen
             name="Home screen"
-            component={Api}
+            component={Home}
             options={{
               title: "Library",
               headerStyle: {
