@@ -22,7 +22,7 @@ const Footer = () => {
       {song ? (
         <>
           <TouchableOpacity
-            style={{ padding: 20 }}
+            style={{ padding: 20, width: "100%", alignItems: "center" }}
             onPress={() =>
               navigation.navigate("Now Playing", {
                 songName: song,

@@ -9,15 +9,15 @@ import MediaButtons from "../styles/MediaButtons";
 import Slider from "@react-native-community/slider";
 
 const Playback = ({ route }) => {
-  const { song } = useContext(SongContext);
-  const [oldSong, setOldSong] = useState();
-  const [sound, setSound] = useState();
+  const { song, setSong } = useContext(SongContext);
+  const {oldSong, setOldSong} = useContext(SongContext);
+  const { sound, setSound } = useContext(SongContext);
   const { playing, setPlaying } = useContext(SongContext);
   let { songPosition, setSongPosition } = useContext(SongContext); //not supposed to use let with usestate
   let [songDuration, setSongDuration] = useState(0);
   let { seekBarPos, setSeekBarPos } = useContext(SongContext);
   let isSubscribed = false;
-  let [songLoaded, setSongLoaded] = useState(false);
+  const {songLoaded, setSongLoaded} = useContext(SongContext);
   let [art, setArt] = useState();
   let [metadata, setMetadata] = useState();
 
@@ -26,15 +26,16 @@ const Playback = ({ route }) => {
       let status = await sound.getStatusAsync();
       setSongDuration(status.durationMillis);
 
-      return status.durationMillis;
+      return songDuration;
     };
     if (sound) {
       getSongDuration();
     }
+    console.log('getting Song Duration ' + oldSong);
   });
 
   useEffect(() => {
-    if (sound) {
+    if (songLoaded) {
       if (playing) {
         songPosition = setInterval(async () => {
           let status = await sound.getStatusAsync();
@@ -42,9 +43,9 @@ const Playback = ({ route }) => {
           setSongPosition(millisToMinutesAndSeconds(status.positionMillis)); //math here probably wrong
           setSeekBarPos(status.positionMillis / status.durationMillis);
         }, 1000);
-        console.log("playing: playback.js");
+        console.log("playing: " + oldSong);
       } else {
-        console.log("pausing or not playing: playback.js");
+        console.log("pausing: playback.js");
       }
     }
   }, [playing]);
@@ -55,21 +56,25 @@ const Playback = ({ route }) => {
 
   const loadSound = async () => {
     if (!songLoaded) {
-      console.log("Loading Sound");
+      console.log("Loading Sound " + song);
       const { sound, status } = await Audio.Sound.createAsync(
         { uri: route.params.location },
         {
           shouldPlay: false,
         }
       );
+      setOldSong(song);
+      setSong(song);
       setSound(sound);
       setSongLoaded(true);
       isSubscribed = true;
-      console.log(status);
+      //console.log(status);
     }
     //load sound different from current one
+
     if (songLoaded) {
-      console.log("Reminder: Playing now will throw an error.");
+      console.log("unloading sound " + oldSong);
+      await sound.stopAsync();
       await sound.unloadAsync();
       isSubscribed = false;
       setSound(null);
@@ -77,7 +82,7 @@ const Playback = ({ route }) => {
     }
   };
 
-  useEffect(() => {
+  /* useEffect(() => {
     let albumArt = async () => {
       let metadata = await MusicInfo.getMusicInfoAsync(route.params.location, {
         title: false,
@@ -90,7 +95,7 @@ const Playback = ({ route }) => {
       console.log(metadata);
     };
     albumArt();
-  }, []);
+  }, []); */
 
   const playPauseSound = async () => {
     if (sound) {
@@ -144,7 +149,7 @@ const Playback = ({ route }) => {
           >
             <Text style={{ fontSize: 15 }}>{songPosition}</Text>
             <Slider
-              value={seekBarPos}
+              value={0}
               style={{ width: 220 }}
               minimumValue={0}
               maximumValue={1}
