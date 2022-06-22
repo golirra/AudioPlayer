@@ -18,6 +18,8 @@ const Playback = ({ route }) => {
   let { seekBarPos, setSeekBarPos } = useContext(SongContext);
   let isSubscribed = false;
   let [songLoaded, setSongLoaded] = useState(false);
+  let [art, setArt] = useState();
+  let [metadata, setMetadata] = useState();
 
   useEffect(() => {
     const getSongDuration = async () => {
@@ -75,19 +77,20 @@ const Playback = ({ route }) => {
     }
   };
 
-  let albumArt = async () => {
-    let metadata = await MusicInfo.getMusicInfoAsync(
-      "file:///storage/emulated/0/Music/(2021) Glow On/02. Turnstile - Blackout.mp3",
-      {
-        title: true,
-        artist: true,
-        album: true,
+  useEffect(() => {
+    let albumArt = async () => {
+      let metadata = await MusicInfo.getMusicInfoAsync(route.params.location, {
+        title: false,
+        artist: false,
+        album: false,
         genre: true,
         picture: true,
-      }
-    );
-    console.log(metadata);
-  };
+      });
+      setArt(metadata.picture.pictureData);
+      console.log(metadata);
+    };
+    albumArt();
+  }, []);
 
   const playPauseSound = async () => {
     if (sound) {
@@ -129,12 +132,8 @@ const Playback = ({ route }) => {
   return (
     <View style={styles.container}>
       <View>
-        <Button title="art" onPress={albumArt} />
         <View style={styles.playbackContainer}>
-          <Image
-            style={styles.albumCover}
-            source={require("../assets/cover.jpg")}
-          />
+          <Image style={styles.albumCover} source={{ uri: art }} />
           <Text>{route.params.songName}</Text>
           <View
             style={{
