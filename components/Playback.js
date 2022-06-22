@@ -13,74 +13,87 @@ const Playback = ({ route }) => {
   const {oldSong, setOldSong} = useContext(SongContext);
   const { sound, setSound } = useContext(SongContext);
   const { playing, setPlaying } = useContext(SongContext);
-  let { songPosition, setSongPosition } = useContext(SongContext); //not supposed to use let with usestate
-  let [songDuration, setSongDuration] = useState(0);
-  let { seekBarPos, setSeekBarPos } = useContext(SongContext);
-  let isSubscribed = false;
+  var { songPosition, setSongPosition } = useContext(SongContext); //not supposed to use let with usestate
+  var {songDuration, setSongDuration} = useContext(SongContext);
+  var { seekBarPos, setSeekBarPos } = useContext(SongContext);
+  var isSubscribed = false;
   const {songLoaded, setSongLoaded} = useContext(SongContext);
-  let [art, setArt] = useState();
-  let [metadata, setMetadata] = useState();
+  var [art, setArt] = useState();
+  var [metadata, setMetadata] = useState();
 
   useEffect(() => {
     const getSongDuration = async () => {
-      let status = await sound.getStatusAsync();
-      setSongDuration(status.durationMillis);
-
-      return songDuration;
-    };
-    if (sound) {
-      getSongDuration();
-    }
-    console.log('getting Song Duration ' + oldSong);
-  });
-
-  useEffect(() => {
-    if (songLoaded) {
-      if (playing) {
-        songPosition = setInterval(async () => {
+      try {
+        if (songLoaded) {
           let status = await sound.getStatusAsync();
-          //console.log(status.positionMillis);
-          setSongPosition(millisToMinutesAndSeconds(status.positionMillis)); //math here probably wrong
-          setSeekBarPos(status.positionMillis / status.durationMillis);
-        }, 1000);
-        console.log("playing: " + oldSong);
-      } else {
-        console.log("pausing: playback.js");
+          console.log('getting Song Duration ' + oldSong);
+          setSongDuration(status.durationMillis);
+        } else if (!songLoaded) {
+          console.log('song duration not available yet');
+          setSongDuration(0);
+        }
+      } catch (err) {
+        console.log(err + " getSongDuration hook");
+      }
+        return songDuration;
+    };
+
+    const loadSound = async () => {
+      if (!songLoaded) {
+        console.log("Loading Sound " + song);
+        const { sound, status } = await Audio.Sound.createAsync(
+          { uri: route.params.location },
+          {
+            shouldPlay: false,
+          }
+        );
+        setOldSong(song);
+        setSong(song);
+        setSound(sound);
+        setSongLoaded(true);
+        isSubscribed = true;
+        //console.log(status);
+      } 
+      
+      if (songLoaded) {
+        if (song === oldSong) {
+          console.log('old song is the selected song');
+        } else if (song !== oldSong) {
+          sound.stopAsync();
+          sound.unloadAsync();
+          setSongLoaded(false);
+          console.log('new song has been selected: unloading sound' + oldSong);
+        }
       }
     }
-  }, [playing]);
 
-  useEffect(() => {
-    loadSound();
-  }, []);
-
-  const loadSound = async () => {
-    if (!songLoaded) {
-      console.log("Loading Sound " + song);
-      const { sound, status } = await Audio.Sound.createAsync(
-        { uri: route.params.location },
-        {
-          shouldPlay: false,
-        }
-      );
-      setOldSong(song);
-      setSong(song);
-      setSound(sound);
-      setSongLoaded(true);
-      isSubscribed = true;
-      //console.log(status);
+    if(playing) {
+      songPosition = setInterval(async () => {
+        let status = await sound.getStatusAsync();
+        setSongPosition(millisToMinutesAndSeconds(status.positionMillis)); //math here probably wrong
+        setSeekBarPos(status.positionMillis / status.durationMillis);
+        console.log('interval is running');
+      }, 1000);
+      return () => clearInterval(songPosition);
     }
-    //load sound different from current one
 
-    if (songLoaded) {
+    loadSound();
+    getSongDuration();
+  }, [playing, songLoaded]);
+
+  const clearStates = () => {
+    
+  }
+
+
+    /*  if (songLoaded) {
       console.log("unloading sound " + oldSong);
       await sound.stopAsync();
       await sound.unloadAsync();
       isSubscribed = false;
       setSound(null);
       setSongLoaded(false);
-    }
-  };
+    } */
 
   /* useEffect(() => {
     let albumArt = async () => {
@@ -149,7 +162,7 @@ const Playback = ({ route }) => {
           >
             <Text style={{ fontSize: 15 }}>{songPosition}</Text>
             <Slider
-              value={0}
+              value={seekBarPos}
               style={{ width: 220 }}
               minimumValue={0}
               maximumValue={1}
