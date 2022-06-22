@@ -136,7 +136,6 @@ const Playback = ({ route }) => {
             source={require("../assets/cover.jpg")}
           />
           <Text>{route.params.songName}</Text>
-          <Text>{route.params.filename}</Text>
           <View
             style={{
               justifyContent: "center",
