@@ -32,7 +32,7 @@ function Home({ navigation }) {
     ];
 
   return (
-    <View style={styles.container}>
+    <View style={{borderTopWidth: 1, borderTopColor: '#dcdcdc',}}>
       {Options.map((Options) => 
       <TouchableOpacity key={Options.id} onPress={() => navigation.navigate(Options.name)}>
         <ListItem bottomDivider>
@@ -45,7 +45,7 @@ function Home({ navigation }) {
       )}
 
         <View>
-          <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', marginTop: 20}}>Recently Added</Text>
+          <Text style={styles.text}>Recently Added</Text>
         </View>
     </View>
   );

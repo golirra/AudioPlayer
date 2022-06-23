@@ -3,7 +3,6 @@ import { createContext, useState } from "react";
 export const SongContext = createContext();
 
 export const SongProvider = ({ children }) => {
-  const [allMedia, setAllMedia] = useState([]);
   const [song, setSong] = useState();
   const [playing, setPlaying] = useState(false);
   const [oldSong, setOldSong] = useState();
@@ -16,7 +15,6 @@ export const SongProvider = ({ children }) => {
   return (
     <SongContext.Provider
       value={{
-        allMedia, setAllMedia,
         songDuration, setSongDuration,
         playing, setPlaying,
         song, setSong,

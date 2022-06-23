@@ -3,8 +3,7 @@ import { StyleSheet } from "react-native";
 const styles = StyleSheet.create({
 
   container: {
-    borderTopWidth: 1, 
-    borderTopColor: '#dcdcdc',
+    alignItems: "center",
   },
 
   playbackContainer: {
@@ -24,6 +23,18 @@ const styles = StyleSheet.create({
     padding: 20,
   },
 
+  buttonBackground: {
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 10,
+    borderColor: 'black',
+    borderWidth: 1,
+    marginTop: 10,
+    height: 80,
+    width: "90%",
+    backgroundColor: "white",
+  },
+
   albumCover: {
     width: 300,
     height: 300,
@@ -32,8 +43,10 @@ const styles = StyleSheet.create({
   text: {
     textAlign: "center",
     justifyContent: "center",
-    color: "white",
-    fontSize: 30,
+    color: "black",
+    fontWeight: "bold",
+    fontSize: 15,
+    padding: 20
   },
 });
 

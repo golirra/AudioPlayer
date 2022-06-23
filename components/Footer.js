@@ -55,7 +55,9 @@ const Footer = () => {
           <Icon type="feather" name="home" />
           <Text>Library</Text>
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("Settings")}
+        >
           <Icon type="feather" name="settings" />
           <Text>Settings</Text>
         </TouchableOpacity>

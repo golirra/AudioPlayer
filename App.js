@@ -2,10 +2,7 @@ import { StatusBar, LogBox } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { SongProvider } from "./context/SongContext.js";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as MediaLibrary from "expo-media-library";
-import { useState, useEffect, useContext } from "react";
-import { SongContext } from "./context/SongContext.js";
+
 
 import Playback from "./components/Playback.js";
 import Footer from "./components/Footer.js";
@@ -16,6 +13,7 @@ import Home from "./screens/Home.js";
 import Songs from "./screens/Songs.js";
 import Playlists from "./screens/Playlists";
 import Genres from "./screens/Genres";
+import Settings from "./screens/Settings";
 import Api from "./components/Api.js";
 
 if (__DEV__) {
@@ -34,47 +32,6 @@ if (__DEV__) {
 }
 
 export default function App() {
-  const [allMedia, setAllMedia] = useState([]);
-
-  const getPermission = async () => {
-    const permission = await MediaLibrary.getPermissionsAsync();
-
-    if (permission.granted) {
-      getAudioFiles();
-    }
-    if (!permission.granted && permission.canAskAgain) {
-      await MediaLibrary.requestPermissionsAsync();
-    }
-    console.log(permission);
-  };
-
-  const getAudioFiles = async () => {
-    let values = await AsyncStorage.getItem("mediaAssets");
-
-    if (values === null) {
-      try {
-        let media = await MediaLibrary.getAssetsAsync({
-          mediaType: "audio",
-        });
-
-        media = await MediaLibrary.getAssetsAsync({
-          mediaType: "audio",
-          first: media.totalCount,
-        });
-        setAllMedia(media.assets);
-        AsyncStorage.setItem("mediaAssets", JSON.stringify(media.assets));
-      } catch (err) {
-        console.log("Error: Must be on mobile or end of list: App.js");
-      }
-    } else {
-      setAllMedia(JSON.parse(values));
-      console.log("fetched from media storage: App.js");
-    }
-  };
-
-  useEffect(() => {
-    getPermission();
-  }, []);
 
   const Stack = createNativeStackNavigator();
 
@@ -172,6 +129,20 @@ export default function App() {
             component={Genres}
             options={{
               title: "Genres",
+              headerStyle: {
+                backgroundColor: "#ecf7d9",
+              },
+              headerTintColor: "black",
+              headerTitleStyle: {
+                fontWeight: "bold",
+              },
+            }}
+          />
+          <Stack.Screen
+            name="Settings"
+            component={Settings}
+            options={{
+              title: "Settings",
               headerStyle: {
                 backgroundColor: "#ecf7d9",
               },

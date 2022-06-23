@@ -1,13 +1,12 @@
 import LibraryInfo from '../components/LibraryInfo'
-import { View, Text, FlatList, Button } from 'react-native'
-import { useState, useEffect, useContext } from "react";
-import * as MediaLibrary from "expo-media-library";
+import { View, FlatList } from 'react-native'
+import { useEffect, useContext, useState } from "react";
 import { SongContext } from '../context/SongContext';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 
 export default function Songs() {
-    const {allMedia, setAllMedia} = useContext(SongContext);
+    const [allMedia, setAllMedia] = useState([]);
     const {song, setSong} = useContext(SongContext);
 
     const getAudioFiles = async () => {
