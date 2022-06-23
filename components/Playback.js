@@ -21,86 +21,99 @@ const Playback = ({ route }) => {
   var [art, setArt] = useState();
   var [metadata, setMetadata] = useState();
 
-  useEffect(() => {
-    //moved into the same useeffect, downside is more logic required so i logged everything to see what is running
+  /* useEffect(() => {
     const getSongDuration = async () => {
       try {
-        if (songLoaded) {
+        if (songLoaded && playing) {
           let status = await sound.getStatusAsync();
           console.log('getting Song Duration ' + oldSong);
-          setSongDuration(status.durationMillis);
+          if (status.durationMillis === undefined) {
+            console.log('song duration is NaN');
+          } else {
+            setSongDuration(status.durationMillis);
+          }
         } else if (!songLoaded) {
           console.log('song duration not available yet');
-          setSongDuration(0);
         }
       } catch (err) {
         console.log(err + " getSongDuration hook");
       }
       return songDuration;
     };
+    getSongDuration();
+  }) */
+
+  useEffect(() => {
+    //moved into the same useeffect, downside is states update slowly but maybe better performance
+    const getSongDuration = async () => {
+      try {
+        if (songLoaded && playing) {
+          let status = await sound.getStatusAsync();
+          console.log('getting Song Duration ' + oldSong);
+          if (status.durationMillis === undefined) {
+            console.log('song duration is NaN');
+          } else {
+            setSongDuration(status.durationMillis);
+          }
+        } else if (!songLoaded) {
+          console.log('song duration not available yet');
+        }
+      } catch (err) {
+        console.log(err + " getSongDuration hook");
+      }
+      return songDuration;
+    }; 
 
     const loadSound = async () => {
-      if (!songLoaded) {
+      if (!songLoaded || (songLoaded && (oldSong !== song))) {
         console.log("Loading Sound " + song);
         const { sound, status } = await Audio.Sound.createAsync(
           { uri: route.params.location },
           {
-            shouldPlay: false,
+            shouldPlay: true,
           }
         );
+        setSound(sound);
         setOldSong(song);
         setSong(song);
-        setSound(sound);
         setSongLoaded(true);
-        isSubscribed = true;
         //console.log(status);
-      } 
-      
-      //checks to see if a song is loaded when it is selected
-      if (songLoaded) {
-        if (song === oldSong) {
-          console.log('old song is the selected song');
-        } else if (song !== oldSong) {
-          //trying to stop the song from playing when a new song is selected, it works when the song is not current playing
-          sound.stopAsync();
-          sound.unloadAsync();
-          setSongLoaded(false);
-          console.log('new song has been selected: unloading sound' + oldSong);
-        }
+        await sound.playAsync();
+        setPlaying(true);
       }
     }
 
     //checks if the song is playing and sets the interval to update the songposition for the silderbar etc.
-    if(playing) {
+    if(playing && songLoaded) {
       songPosition = setInterval(async () => {
         let status = await sound.getStatusAsync();
         setSongPosition(millisToMinutesAndSeconds(status.positionMillis)); //math here probably wrong
         setSeekBarPos(status.positionMillis / status.durationMillis);
-        console.log('interval is running');
-      }, 1000);
+        console.log('getting song duration interval - running');
+
+        //since the interval is tracking the song position it can see if the song vars are changed within the next second
+        //that logic is hear, it takes a second to do everything b/c of the interval speed, slow performance but it works
+        if (oldSong !== song) {
+          await sound.unloadAsync();
+          setSongLoaded(false);
+          console.log('unloaded sound ' + oldSong);
+          //return the clear interval call back when no song is loaded
+          return () => clearInterval(songPosition);
+        } 
+      },1000);
+
       //if interval is declared it will return a clear function
       return () => clearInterval(songPosition);
     }
 
     loadSound();
-    getSongDuration();
+    //getSongDuration();
   }, [playing, songLoaded]);
 
 
   //if setting a lot of states back to zero we can make a function
   const clearStates = () => {
-    
   }
-
-
-    /*  if (songLoaded) {
-      console.log("unloading sound " + oldSong);
-      await sound.stopAsync();
-      await sound.unloadAsync();
-      isSubscribed = false;
-      setSound(null);
-      setSongLoaded(false);
-    } */
 
   /* useEffect(() => {
     let albumArt = async () => {
@@ -120,9 +133,11 @@ const Playback = ({ route }) => {
   const playPauseSound = async () => {
     if (sound) {
       if (!playing) {
+        console.log('hit play');
         setPlaying(true);
         await sound.playAsync();
       } else {
+        console.log('hit pause');
         setPlaying(false);
         await sound.pauseAsync();
       }
@@ -133,16 +148,12 @@ const Playback = ({ route }) => {
     console.log("pressed prev: playback.js");
     if (sound) {
       sound.replayAsync();
-    } else {
-      //do nothing
     }
   };
 
   const songPos = async (position) => {
     if (sound) {
       sound.setStatusAsync({ positionMillis: position });
-    } else {
-      //do nothing
     }
   };
 

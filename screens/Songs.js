@@ -7,7 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 
 
 export default function Songs() {
-    const [allMedia, setAllMedia] = useState([]);
+    const {allMedia, setAllMedia} = useContext(SongContext);
     const {song, setSong} = useContext(SongContext);
 
     const getAudioFiles = async () => {

@@ -4,7 +4,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { SongProvider } from "./context/SongContext.js";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as MediaLibrary from "expo-media-library";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { SongContext } from "./context/SongContext.js";
 
 import Playback from "./components/Playback.js";
 import Footer from "./components/Footer.js";
