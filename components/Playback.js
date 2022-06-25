@@ -77,8 +77,6 @@ const Playback = ({ route }) => {
     loadSound();
   }, [playing, songLoaded]);
 
-  
-
   /* useEffect(() => {
     let albumArt = async () => {
       let metadata = await MusicInfo.getMusicInfoAsync(route.params.location, {
@@ -117,7 +115,14 @@ const Playback = ({ route }) => {
 
   const songPos = async (position) => {
     if (sound) {
-      sound.setStatusAsync({ positionMillis: position });
+      playPauseSound();
+      setSeekBarPos(position/songDuration);
+      await sound.setStatusAsync({ positionMillis: position });
+      
+      setTimeout(async function() {
+        await sound.playAsync();
+        setPlaying(true); 
+      }, 1000);
     }
   };
 
