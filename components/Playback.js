@@ -21,33 +21,10 @@ const Playback = ({ route }) => {
   var [art, setArt] = useState();
   var [metadata, setMetadata] = useState();
 
-  /* useEffect(() => {
-    const getSongDuration = async () => {
-      try {
-        if (songLoaded && playing) {
-          let status = await sound.getStatusAsync();
-          console.log('getting Song Duration ' + oldSong);
-          if (status.durationMillis === undefined) {
-            console.log('song duration is NaN');
-          } else {
-            setSongDuration(status.durationMillis);
-          }
-        } else if (!songLoaded) {
-          console.log('song duration not available yet');
-        }
-      } catch (err) {
-        console.log(err + " getSongDuration hook");
-      }
-      return songDuration;
-    };
-    getSongDuration();
-  }) */
-
   useEffect(() => {
-    //moved into the same useeffect, downside is states update slowly but maybe better performance
     const getSongDuration = async () => {
       try {
-        if (songLoaded && playing) {
+        if (sound) {
           let status = await sound.getStatusAsync();
           console.log('getting Song Duration ' + oldSong);
           if (status.durationMillis === undefined) {
@@ -63,6 +40,11 @@ const Playback = ({ route }) => {
       }
       return songDuration;
     }; 
+    getSongDuration();
+  }, [sound])
+
+  useEffect(() => {
+    //moved into the same useeffect, downside is states update slowly but maybe better performanc
 
     const loadSound = async () => {
       if (!songLoaded || (songLoaded && (oldSong !== song))) {
@@ -107,7 +89,6 @@ const Playback = ({ route }) => {
     }
 
     loadSound();
-    //getSongDuration();
   }, [playing, songLoaded]);
 
 

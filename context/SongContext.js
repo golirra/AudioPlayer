@@ -4,7 +4,7 @@ export const SongContext = createContext();
 
 export const SongProvider = ({ children }) => {
   const [song, setSong] = useState();
-  const [playing, setPlaying] = useState(false);
+  const [playing, setPlaying] = useState(true);
   const [oldSong, setOldSong] = useState();
   const [sound, setSound] = useState();
   const [songLoaded, setSongLoaded] = useState(false);
