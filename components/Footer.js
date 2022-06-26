@@ -1,14 +1,17 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Image } from "react-native";
 import { useState, useEffect, useContext } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { SongContext } from "../context/SongContext";
+import MediaButtons from "../styles/MediaButtons";
+import styles from "../styles/styles.js";
 
 import { Icon } from "@rneui/themed";
 
 const Footer = () => {
   const navigation = useNavigation();
-  const { playing } = useContext(SongContext);
+  const { playing, setPlaying } = useContext(SongContext);
   const { song } = useContext(SongContext);
+  const { art } = useContext(SongContext);
 
   return (
     <View
@@ -21,16 +24,19 @@ const Footer = () => {
     >
       {song ? (
         <>
-          <TouchableOpacity
-            style={{ padding: 20, width: "100%", alignItems: "center" }}
-            onPress={() =>
-              navigation.navigate("Now Playing", {
-                songName: song,
-              })
-            }
-          >
-            <Text>Playing: {song}</Text>
-          </TouchableOpacity>
+          <View style={{flexDirection: "row"}}>
+            <TouchableOpacity
+              style={{ padding: 20}}
+              onPress={() =>
+                navigation.navigate("Now Playing", {
+                  songName: song,
+                  art: art
+                })
+              }
+            >
+              <Text>Playing: {song}</Text>
+            </TouchableOpacity>
+          </View>
         </>
       ) : (
         <>

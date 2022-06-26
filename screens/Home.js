@@ -3,9 +3,30 @@ import { TouchableOpacity } from "react-native";
 import { useHeaderHeight } from '@react-navigation/elements';
 import { ListItem, Icon } from '@rneui/themed'
 import styles from "../styles/styles.js";
+import { SongContext } from "../context/SongContext";
+import { useContext, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 
 function Home({ navigation }) {
+
+  const { allMedia, setAllMedia } = useContext(SongContext);
+
+  const getAudioFiles = async () => {
+
+    let values = await AsyncStorage.getItem('mediaAssets');
+
+    if (values===null){
+        console.log('storage is empty: Songs.js')
+    } else {
+        setAllMedia(JSON.parse(values));
+        console.log('fetched from storage: Songs.js');
+    }
+  };
+
+  useEffect(() => {
+      getAudioFiles();
+  }, [])
 
   const Options = [
     {
@@ -28,8 +49,7 @@ function Home({ navigation }) {
         id:4,
         name: 'Genres',
         icon: 'box'
-    }
-    ];
+    }];
 
   return (
     <View style={{borderTopWidth: 1, borderTopColor: '#dcdcdc',}}>

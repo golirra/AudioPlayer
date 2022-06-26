@@ -1,13 +1,17 @@
-import { View  } from 'react-native'
-import {  useState } from 'react'
+import { View, ActivityIndicator, Text } from 'react-native'
+import { useState, useContext } from 'react'
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as MediaLibrary from "expo-media-library";
 import Button from '../components/Button'
 import styles from '../styles/styles'
+import MusicInfo from "expo-music-info";
+
+import { SongContext } from '../context/SongContext';
 
 
 const Settings = () => {
-    const [allMedia, setAllMedia] = useState([]);
+    const [loading, setloading] = useState(false);
+    const {allMedia, setAllMedia} = useContext(SongContext);
 
     const getPermission = async () => {
     
@@ -35,15 +39,28 @@ const Settings = () => {
                 mediaType: "audio",
                 first: media.totalCount,
             });
-                setAllMedia(media.assets);
                 console.log('setting media storage')
-                AsyncStorage.setItem("mediaAssets", JSON.stringify(media.assets));
+                for (let i in media.assets) {
+                    setloading(true); 
+                        let metadata = await MusicInfo.getMusicInfoAsync(media.assets[i].uri, {
+                            title: true,
+                            artist: true,
+                            album: true,
+                            genre: true,
+                            picture: true  
+                        });
+                        var fileLocation = media.assets[i].uri;
+                        var musicData = {
+                            'fileLocation': fileLocation,
+                            'metadata': metadata
+                        };
+                        allMedia.push(musicData)
+                }
+                AsyncStorage.setItem("mediaAssets", JSON.stringify(allMedia));
             } catch (err) {
                 console.log("Error: Must be on mobile or end of list: App.js");
             }
-        } else {
-            setAllMedia(JSON.parse(values));
-            console.log("fetched from media storage: App.js");
+            setloading(false);
         }
     };
 
@@ -52,12 +69,24 @@ const Settings = () => {
         console.log('storage cleared')
     }
 
-
     return (
-        <View style={styles.container}>
-            <Button name='Get Media' icon='music' onPress={getPermission}/>
-            <Button name='Clear Media' icon='music' onPress={clearMedia} />
-            <Button name='Get Album Art' icon='music'/>
+        <View>
+            {loading ? 
+                <>
+                    <View style={{justifyContent: 'center', alignItems: 'center', height: '100%'}}>
+                        <ActivityIndicator size='large' />
+                        <Text style={{justifyContent: 'center', alignItems: 'center'}}>This may take a while...</Text>
+                    </View>
+                </> 
+            : 
+                <>
+                    <View style={styles.container}>
+                        <Button name='Get Media' icon='music' onPress={getPermission}/>
+                        <Button name='Clear Media' icon='trash' onPress={clearMedia} />
+                        <Button name='Get Album Art' icon='archive'/>
+                    </View>
+                </>
+            }
         </View>
         
     )

@@ -6,6 +6,7 @@ import pause from '../assets/MediaButtons/pause.png';
 import previous from '../assets/MediaButtons/previous.png';
 import repeat from '../assets/MediaButtons/repeat.png';
 import volume from '../assets/MediaButtons/volume.png';
+import albumArt from '../assets/No-album-art.png';
 
 export default {
     play,
@@ -15,5 +16,6 @@ export default {
     pause,
     previous,
     repeat,
-    volume
+    volume,
+    albumArt,
 };

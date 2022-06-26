@@ -1,24 +1,23 @@
 import { Audio } from "expo-av";
-import { Text, View, TouchableOpacity, Button, Image } from "react-native";
-import { useState, useEffect, useContext, useCallback } from "react";
+import { Text, View, TouchableOpacity, Image } from "react-native";
+import { useEffect, useContext } from "react";
 import { SongContext } from "../context/SongContext";
-import MusicInfo from "expo-music-info";
-
 import styles from "../styles/styles.js";
 import MediaButtons from "../styles/MediaButtons";
 import Slider from "@react-native-community/slider";
 
 const Playback = ({ route }) => {
+  const { allMedia, setAllMedia } = useContext(SongContext);
+  const { art, setArt } = useContext(SongContext)
   const { song, setSong } = useContext(SongContext);
-  const {oldSong, setOldSong} = useContext(SongContext);
+  const { oldSong, setOldSong } = useContext(SongContext);
   const { sound, setSound } = useContext(SongContext);
   const { playing, setPlaying } = useContext(SongContext);
   var { songPosition, setSongPosition } = useContext(SongContext); //not supposed to use let with usestate
-  var {songDuration, setSongDuration} = useContext(SongContext);
+  var { songDuration, setSongDuration } = useContext(SongContext);
   var { seekBarPos, setSeekBarPos } = useContext(SongContext);
-  const {songLoaded, setSongLoaded} = useContext(SongContext);
-  var [art, setArt] = useState();
-  var [metadata, setMetadata] = useState();
+  const { songLoaded, setSongLoaded } = useContext(SongContext);
+  
 
   useEffect(() => {
     const getSongDuration = async () => {
@@ -29,7 +28,6 @@ const Playback = ({ route }) => {
         } else if (!songLoaded) {
           console.log('song duration not available yet');
         }
-      return songDuration;
     }; 
     getSongDuration();
   }, [sound]);
@@ -47,6 +45,7 @@ const Playback = ({ route }) => {
         setSound(sound);
         setOldSong(song);
         setSong(song);
+        setArt(route.params.art);
         setSongLoaded(true);
         //console.log(status);
         await sound.playAsync();
@@ -76,21 +75,6 @@ const Playback = ({ route }) => {
 
     loadSound();
   }, [playing, songLoaded]);
-
-  /* useEffect(() => {
-    let albumArt = async () => {
-      let metadata = await MusicInfo.getMusicInfoAsync(route.params.location, {
-        title: false,
-        artist: false,
-        album: false,
-        genre: true,
-        picture: true,
-      });
-      setArt(metadata.picture.pictureData);
-      console.log(metadata);
-    };
-    albumArt();
-  }, []); */
 
   const playPauseSound = async () => {
     if (sound) {
@@ -138,8 +122,10 @@ const Playback = ({ route }) => {
     <View style={styles.container}>
       <View>
         <View style={styles.playbackContainer}>
-          <Image style={styles.albumCover} source={{ uri: art }} />
-          <Text>{route.params.songName}</Text>
+          <View style={styles.albumCover}>
+            {route.params.art ? <><Image style={styles.albumCover} source={{uri: route.params.art}} /></> : <><Image style={styles.albumCover} source={MediaButtons.albumArt} /></>}
+          </View>
+          <Text style={{marginTop: 10}}>{route.params.songName}</Text>
           <View
             style={{
               justifyContent: "center",
