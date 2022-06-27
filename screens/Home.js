@@ -63,10 +63,6 @@ function Home({ navigation }) {
       </ListItem>
       </TouchableOpacity>
       )}
-
-        <View>
-          <Text style={styles.text}>Recently Added</Text>
-        </View>
     </View>
   );
 }
