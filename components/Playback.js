@@ -1,6 +1,6 @@
 import { Audio } from "expo-av";
 import { Text, View, TouchableOpacity, Image } from "react-native";
-import { useEffect, useContext } from "react";
+import { useEffect, useContext, useState } from "react";
 import { SongContext } from "../context/SongContext";
 import styles from "../styles/styles.js";
 import MediaButtons from "../styles/MediaButtons";
@@ -9,6 +9,7 @@ import Slider from "@react-native-community/slider";
 const Playback = ({ route }) => {
   const { allMedia, setAllMedia } = useContext(SongContext);
   const { art, setArt } = useContext(SongContext)
+  const { songIndex, setSongIndex } = useContext(SongContext)
   const { song, setSong } = useContext(SongContext);
   const { oldSong, setOldSong } = useContext(SongContext);
   const { sound, setSound } = useContext(SongContext);
@@ -17,6 +18,7 @@ const Playback = ({ route }) => {
   var { songDuration, setSongDuration } = useContext(SongContext);
   var { seekBarPos, setSeekBarPos } = useContext(SongContext);
   const { songLoaded, setSongLoaded } = useContext(SongContext);
+  const [nextCounter, setNextCounter] = useState(0);
   
 
   useEffect(() => {
@@ -33,7 +35,7 @@ const Playback = ({ route }) => {
   }, [sound]);
 
   useEffect(() => {
-    const loadSound = async () => {
+    const loadSound = async (file) => {
       if (!songLoaded || (songLoaded && (oldSong !== song))) {
         console.log("Loading Sound " + song);
         const { sound, status } = await Audio.Sound.createAsync(
@@ -46,6 +48,7 @@ const Playback = ({ route }) => {
         setOldSong(song);
         setSong(song);
         setArt(route.params.art);
+        setSongIndex(route.params.index);
         setSongLoaded(true);
         //console.log(status);
         await sound.playAsync();
@@ -76,14 +79,14 @@ const Playback = ({ route }) => {
   useEffect(() => {
     //when the another song is clicked this will check the sounds
     const checkSong = async () => {
-      if (oldSong !== song) {
+      if ((oldSong !== song) && songLoaded) {
         await sound.unloadAsync();
         setSongLoaded(false);
         console.log('unloaded sound ' + oldSong);
       } 
     }
     checkSong();
-  }, [])
+  }, []);
 
   const playPauseSound = async () => {
     if (sound) {
@@ -100,11 +103,39 @@ const Playback = ({ route }) => {
   };
 
   const prevSound = async () => {
-    console.log("pressed prev: playback.js");
+    console.log("pressed prev");
     if (sound) {
       sound.replayAsync();
     }
   };
+
+  const nextSound = async () => {
+    let nextSong
+    console.log('pressed next, unloading current sound');
+    await sound.unloadAsync();
+    try {
+      nextSong = allMedia[songIndex+1];
+      route.params.location = nextSong.fileLocation;
+      route.params.songName = nextSong.metadata.title;
+      route.params.index = songIndex+1;
+      setSong(nextSong.metadata.title);
+    } catch (e) {
+      nextSong = allMedia[0];
+      route.params.location = nextSong.fileLocation;
+      route.params.songName = nextSong.metadata.title;
+      route.params.index = 0;
+      console.log('next song not available, starting over');
+      setSong(nextSong.metadata.title);
+    }
+
+    try {
+      route.params.art = nextSong.metadata.picture.pictureData
+    } catch (e) {
+      console.log('no picture data next song');
+      route.params.art = null
+    }
+    setSongLoaded(false)
+  }
 
   const songPos = async (position) => {
     if (sound) {
@@ -176,7 +207,7 @@ const Playback = ({ route }) => {
               )}
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.buttonContainer} onPress={nextSound}>
               <Image source={MediaButtons.next} style={styles.button} />
             </TouchableOpacity>
           </View>

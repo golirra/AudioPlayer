@@ -10,6 +10,7 @@ import { Icon } from "@rneui/themed";
 const Footer = () => {
   const navigation = useNavigation();
   const { playing, setPlaying } = useContext(SongContext);
+  const { songIndex, setSongIndex } = useContext(SongContext);
   const { song } = useContext(SongContext);
   const { art } = useContext(SongContext);
 
@@ -30,7 +31,8 @@ const Footer = () => {
               onPress={() =>
                 navigation.navigate("Now Playing", {
                   songName: song,
-                  art: art
+                  art: art,
+                  index: songIndex
                 })
               }
             >
