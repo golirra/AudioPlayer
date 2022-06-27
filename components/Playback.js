@@ -62,10 +62,7 @@ const Playback = ({ route }) => {
         //since the interval is tracking the song position it can see if the song vars are changed within the next second
         //that logic is here, it takes a second to do everything b/c of the interval speed, slow performance but it works
         if (oldSong !== song) {
-          await sound.unloadAsync();
-          setSongLoaded(false);
-          console.log('unloaded sound ' + oldSong);
-          //return the clear interval call back when no song is loaded
+          //return the clear interval call back when different loaded is loaded
           return () => clearInterval(songPosition);
         } 
       },1000); 
@@ -75,6 +72,18 @@ const Playback = ({ route }) => {
 
     loadSound();
   }, [playing, songLoaded]);
+
+  useEffect(() => {
+    //when the another song is clicked this will check the sounds
+    const checkSong = async () => {
+      if (oldSong !== song) {
+        await sound.unloadAsync();
+        setSongLoaded(false);
+        console.log('unloaded sound ' + oldSong);
+      } 
+    }
+    checkSong();
+  }, [])
 
   const playPauseSound = async () => {
     if (sound) {
