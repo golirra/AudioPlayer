@@ -54,7 +54,6 @@ const Settings = () => {
                             'fileLocation': fileLocation,
                             'metadata': metadata
                         };
-                        let array = []
                         allMedia.push(musicData)
                 }
                 AsyncStorage.setItem("mediaAssets", JSON.stringify(allMedia));
@@ -66,7 +65,6 @@ const Settings = () => {
     };
 
     const clearMedia = async () => {
-        setAllMedia([]);
         await AsyncStorage.clear();
         console.log('storage cleared')
     }
