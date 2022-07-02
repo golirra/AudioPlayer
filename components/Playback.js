@@ -18,7 +18,6 @@ const Playback = ({ route }) => {
   var { songDuration, setSongDuration } = useContext(SongContext);
   var { seekBarPos, setSeekBarPos } = useContext(SongContext);
   const { songLoaded, setSongLoaded } = useContext(SongContext);
-  const [nextCounter, setNextCounter] = useState(0);
   
 
   useEffect(() => {
@@ -51,8 +50,8 @@ const Playback = ({ route }) => {
         setSongIndex(route.params.index);
         setSongLoaded(true);
         //console.log(status);
-        await sound.playAsync();
-        setPlaying(true);
+          await sound.playAsync();
+          setPlaying(true);
       }
     }
     //checks if the song is playing and sets the interval to update the songposition for the silderbar etc.
@@ -113,6 +112,7 @@ const Playback = ({ route }) => {
     let nextSong
     console.log('pressed next, unloading current sound');
     await sound.unloadAsync();
+    setSongLoaded(false)
     try {
       nextSong = allMedia[songIndex+1];
       route.params.location = nextSong.fileLocation;
@@ -134,7 +134,6 @@ const Playback = ({ route }) => {
       console.log('no picture data next song');
       route.params.art = null
     }
-    setSongLoaded(false)
   }
 
   const songPos = async (position) => {
